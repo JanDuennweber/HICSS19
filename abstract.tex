@@ -64,23 +64,49 @@ A collection vehicle that drives obstinately from the most heavily filled
 container to one with the fill-grade closest to that will obviously need 
 more time in the majority of cases than a vehicle following a fixed plan, 
 since heavily filled containers are probably positioned far apart from 
-each other. Finding a smarter route leads us to the classic vehicle routing
-problem (VRP~\cite{Dantzig59}), an instance of the Travelling Salesman
-Problem (TSP) with the added contraint that we need to return to the starting 
-point after visiting a fixed number of points, since the collection vehicle 
-has a limited capacity. Thus, we don't need to find the minimum Hamiltonian
+each other. Finding a smarter route leads us to the classic 
+{\it vehicle routing problem} (VRP~\cite{Dantzig59}), an instance of the 
+{\it Travelling Salesman Problem (TSP)} with the added contraint that we 
+need to return to the starting point after visiting a fixed number of points, 
+since the collection vehicle has a limited capacity. 
+Thus, we don't need to find the minimum Hamiltonian
 cicle through all the points but multiple circles forming some kind of
 clover leaf. However, finding the best route to collect the waste 
-containers does not only require to take account for the distances between 
+containers does not only require to consider the distances between 
 the single containers. Containers which are only filled to a certain level should
 be skipped, i.\,e. we are dealing with a instance of a dynamic route 
 planning problem, which is also the subject of more recent 
 research~\cite{Chen16}.
 
+There are $\frac{n!}{2}$ different routes connecting $n$ containers. 
+For comparing all routes between only $10$ containers, this means 
+3628800 routes must be analyzed. Modern waste collection
+vehicles can be loaded with $\approx 400$ container of 120 
+litres~\cite{hyundai18}.
+$400!$ is a $882$-digit number. Taken into account that skipping 
+containers with little load, means the vehicle has to pickup an other
+one where it usually does not drive to, solving our dynamic VRP requires
+to solve a new problem of that size, everytime when the fill-level
+measurements are updated. Nowadays, supercomputers can deal with 
+such problem sizes~\cite{Burkhovetskiy2017}. However, the
+presented projects deal with approximative solutions, which
+can be found using a standard PC or an on-board computer in
+the garbage truck. Therefore, the presented work might be relevant 
+for automating the navigation of future self-driving garbage 
+trucks, like the one Volvo started tesing in Brussels 
+recently~\cite{volvo17}.
 
-
-All manuscripts must be in English. {\em Manuscripts must not exceed 10 pages, single-spaced and 
-double-columned}.  This includes all graphs, tables, figures and references. These guidelines include complete descriptions of the fonts, spacing, and related information for producing your proceedings manuscripts. Please follow the steps outlined below preparing your final manuscript. {\em Read the following carefully. The quality of the finished product largely depends upon receiving your cooperation and help at this particular stage of the publication process.}
+The approximative solutions presented in this paper are based on 
+the {\it ant colony optimization} (ACO~\cite{Dorigo04}). This 
+approach has been proven suitable for dynamic VRP instances
+in a simulation, where the road network and the related 
+traffic were taken into account~\cite{Karadimas2008}. ACO is a {\it swarm imtelligence}
+procedure, i.\,e. not an individual (a simulated ant in the case of 
+ACO) solves a problem but a group. For finding optimal routes,
+the simulation starts with letting the ants take random paths
+until they reach their destination. This random walk is optimized
+iteratively: each ant leaves a pheromone trail behind it which
+evaporates after a certain number of iterations ..
 
 
 \section{Formatting your paper}
