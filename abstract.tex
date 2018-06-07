@@ -10,6 +10,7 @@
 
 \documentclass[10pt]{article}
 \input{hicss51-packages.tex}
+\usepackage{blindtext}
 \newcommand{\sansserifformat}[1]{\fontfamily{cmss}{ #1}}%
 
 %\setlength\titlebox{5cm}
@@ -27,7 +28,7 @@
   {\underline{ jan.duennweber@othr.de} }\\\And 
   Amitrajit Sarkar \\
  Ara Institute \\ of Canterbury \\
-  {\underline{amit.sarkar@ara.ac.nz@domain}} \\\And
+  {\underline{amit.sarkar@ara.ac.nz}} \\\And
   Vimal Kumar Puthiyadath \\
  KPIT Technologies Ltd \\
   {\underline{Vimal.Puthiyadath@kpit.com}} 
@@ -52,7 +53,7 @@ times by the use of networked fill-level sensors: Regensburg,
 Christchurch and Pune. Our analysis shows that the most efficient collection schedules 
 result from adapting field-tested routes frequently on the basis of 
 current sensor measurements and shortcuts resulting from route 
-optimization algorithms.
+optimization computations.
 \end{abstract}
 
 \section{Introduction}
@@ -66,11 +67,11 @@ more time in the majority of cases than a vehicle following a fixed plan,
 since heavily filled containers are probably positioned far apart from 
 each other. Finding a smarter route leads us to the classic 
 {\it vehicle routing problem} (VRP~\cite{Dantzig59}), an instance of the 
-{\it Travelling Salesman Problem (TSP)} with the added contraint that we 
+{\it Travelling Salesman Problem (TSP)} with the added constraint that we 
 need to return to the starting point after visiting a fixed number of points, 
 since the collection vehicle has a limited capacity. 
 Thus, we don't need to find the minimum Hamiltonian
-cicle through all the points but multiple circles forming some kind of
+circle through all the points but multiple circles forming some kind of
 clover leaf. However, finding the best route to collect the waste 
 containers does not only require to consider the distances between 
 the single containers. Containers which are only filled to a certain level should
@@ -82,142 +83,93 @@ There are $\frac{n!}{2}$ different routes connecting $n$ containers.
 For comparing all routes between only $10$ containers, this means 
 3628800 routes must be analyzed. Modern waste collection
 vehicles can be loaded with $\approx 400$ container of 120 
-litres~\cite{hyundai18}.
+liters~\cite{hyundai18}.
 $400!$ is a $882$-digit number. Taken into account that skipping 
 containers with little load, means the vehicle has to pickup an other
 one where it usually does not drive to, solving our dynamic VRP requires
-to solve a new problem of that size, everytime when the fill-level
+to solve a new problem of that size, every time when the fill-level
 measurements are updated. Nowadays, supercomputers can deal with 
 such problem sizes~\cite{Burkhovetskiy2017}. However, the
-presented projects deal with approximative solutions, which
+presented projects deal with approximate solutions, which
 can be found using a standard PC or an on-board computer in
 the garbage truck. Therefore, the presented work might be relevant 
 for automating the navigation of future self-driving garbage 
-trucks, like the one Volvo started tesing in Brussels 
+trucks, like the one Volvo started testing in Brussels 
 recently~\cite{volvo17}.
 
-The approximative solutions presented in this paper are based on 
+The approximate solutions presented in this paper are based on 
 the {\it ant colony optimization} (ACO~\cite{Dorigo04}). This 
 approach has been proven suitable for dynamic VRP instances
 in a simulation, where the road network and the related 
-traffic were taken into account~\cite{Karadimas2008}. ACO is a {\it swarm imtelligence}
+traffic were taken into account~\cite{Karadimas2008}. ACO is a {\it swarm intelligence}
 procedure, i.\,e. not an individual (a simulated ant in the case of 
 ACO) solves a problem but a group. For finding optimal routes,
 the simulation starts with letting the ants take random paths
 until they reach their destination. This random walk is optimized
 iteratively: each ant leaves a pheromone trail behind it which
-evaporates after a certain number of iterations ..
+evaporates after a certain number of iterations. In every iteration
+the pheromone intensity of the shorter paths increases because
+whenever a simulated ant can choose among multiple paths, it takes
+the one with the highest pheromone intensity. This means, in higher
+iterations, the paths are no more randomly chosen but influenced 
+by the most successful ants from preceding iterations, which are
+the ones whose pheromone trails did not evaporate until their 
+followers reached them, since they were on the shortest paths.
+
+The rest of this paper is structured as follows: 
+Section~\ref{sec:Regensburg} shows how the city of Regensburg benefits from using 
+fill-level sensing and ACO-based route optimization for collecting their biological
+waste containers. 
+Section~\ref{sec:Christchurch} introduces {\it LevelSense} in Christchurch, 
+an IoT-based approach to on-demand waste collection, which also uses ACO and is a 
+part of a larger {\it Smart City} initiative in New Zealand, the {\it PiP-IOT project}. 
+Section~\ref{sec:Pune} introduces another route optimization algorithm, which is used
+by {\tt kpit.com} for solving a related problem: Getting all the employees
+from various places in Pune to their their offices. 
+
+Section~\ref{sec:concl} looks back on the three projects, which were all 
+put into practice, discusses the {\it lessons learned} from these projects,
+their benefits and points out some future perspectives.
 
 
-\section{Formatting your paper}
+\section{Regensburg's Smart City Approach: Collecting Biological Waste more Efficiently}
+\label{sec:Regensburg}
 
-All printed material, including text, illustrations, and charts, must be kept within a print area of 6-1/2 inches (16.51 cm) wide by 8-7/8 inches (22.51 cm) high. Do not write or print anything outside the print area. All text must be in a two-column format. Columns are to be 3 inches (7.85 cm) wide, with a 5.1/16 inch (0.81 cm) space between them. Text must be fully justified. \\
-This formatting guideline provides the margins, placement, and print areas. If you hold it and your printed page up to the light, you can easily check your margins to see if your print area fits within the space allowed.
+Our work in Regensburg focuses on improving the collection of biological waste.
+Figure~\ref{fig:container} shows a container.
 
-\section{Main title}
-
-The main title (on the first page) should begin 1-3/8 inches (3.49 cm) from the top edge of the page, centered, and in Times 14-point, boldface type. Capitalize the first letter of nouns, pronouns, verbs, adjectives, and adverbs; do not capitalize articles, coordinate conjunctions, or prepositions (unless the title begins with such a word). Leave two 12-point blank lines after the title.
-
-\section{Author name(s) and affiliation(s) }
-
-Author names and affiliations must be included in the submitted Final Paper for Publication. Leave two 12-point blank lines after the author’s information. 
-
-\section{Second and following pages}
-\label{sect:pdf}
-
-The second and following pages should begin 1.0 inch (2.54 cm) from the top edge. On all pages, the bottom margin should be 1-1/8 inches (2.86 cm) from the bottom edge of the page for 8.5 x 11-inch paper. (Letter-size paper)
-
-\section{Type-style and fonts}
-\label{sec:type-style}
-
-Please note that {\em Times New Roman} is the preferred font for the text of you paper. \textbf{If you must use another font}, the following are considered base fonts.  You are encouraged to limit your font selections to Helvetica, Arial, and Symbol as needed. These fonts are automatically installed with the viewing software. 
-
-\section{Page Numbers}
-
-Please DO NOT include page numbers in your manuscript.
-
- 
-
-\section{Graphics/Images}
-
-All images must be embedded in your document or included with your submission as individual source files. The type of graphics you include will affect the quality and size of your paper on the electronic document disc. In general, the use of vector graphics such as those produced by most presentation and drawing packages can be used without concern and is encouraged.
-
-\begin{itemize}
-\item Resolution: 600 dpi
-\item Color Images: Bicubic Downsampling at 300dpi
-\item Compression for Color Images: JPEG/Medium Quality
-\item Grayscale Images: Bicubic Downsampling at 300dpi
-\item Compression for Grayscale Images: JPEG/Medium Quality
-\item Monochrome Images: Bicubic Downsampling at 600dpi
-\item Compression for Monochrome Images: CCITT Group 4
-\end{itemize}
-
-If your paper contains many large images they will be down-sampled to reduce their size during the conversion process.  However the automated process used will not always produce the best image, and you are encouraged to perform this yourself on an image by image basis. The use of bitmapped images such as those produced when a photograph is scanned requires significant storage space and must be used with care.
-
-\section{Main text}
-
-Type your main text in 10-point Times, single-spaced. Do not use double-spacing. All paragraphs should be indented 1/4 inch (approximately 0.5 cm).  Be sure your text is fully justified—that is, flush left and flush right. Please do not place any additional blank lines between paragraphs. \\
-\textbf{Figure and table captions} should be 9-point boldface Helvetica (or a similar sans-serif font).  Callouts should be 9-point non-boldface Helvetica. Initially capitalize only the first word of each figure caption and table title. Figures and tables must be numbered separately. For example: ``Figure 1. Database contexts'', ``Table 1. Input data''. Figure captions are to be centered below the figures. Table titles are to be centered above the tables.
-
-% For one-column wide figures use
-\begin{figure}[thb]
+\begin{figure}[h!]
 	% Use the relevant command to insert your figure file.
 	% For example, with the graphicx package use
     \centering
-	\includegraphics[trim={3cm 3cm 3cm 3cm}, clip,width=0.9\linewidth]{biobin}
+	\includegraphics[trim={3cm 3cm 3cm 3cm}, clip,width=0.6\linewidth]{biobin}
 	% figure caption is below the figure
-	\caption{Sample figure with caption.}
-	\label{fig: sample-figure}       % Give a unique label
+	\caption{A Biological Waste Container equipped with a fill-level sensor}
+	\label{fig:container}       % Give a unique label
 \end{figure}
 
-\section{First-order headings}
+\blindtext
 
-For example, “1. Introduction”, should be Times 12-point boldface, initially capitalized, flush left, with one 12-point blank line before, and one blank line after. Use a period (“.”) after the heading number, not a colon. 
+\section{LevelSense and the PiP-IoT project}
+\label{sec:Christchurch}
 
-\subsection{Second-order headings}
- 
-As in this heading, they should be Times 11-point boldface, initially capitalized, flush left, with one blank line before, and one after. 
+\blindtext
 
-\subsubsection{Third-order headings. }
+\section{Collecting Employees at {\tt kpit.com}}
+\label{sec:Pune}
 
-Third-order headings, as in this paragraph, are discouraged. However, if you must use them, use 10-point Times, boldface, initially capitalized, flush left, followed by a period and your text on the same line. 
+\blindtext
 
-\section{Footnotes}
+\section{Conclusion and Future Perspectives}
+\label{sec:concl}
 
-      Use footnotes sparingly and place them at the bottom of the column on the page on which they are referenced. Use Times New Roman 8-point type, single-spaced. To help your readers, try to avoid using footnotes altogether and include necessary peripheral observations in the text (within parentheses, if you prefer, as in this sentence). 
+\blindtext
 
-% Fonts specification --- not shown as it doesn't exist in the Word document either. 
+% \section{References} 
 
-%\section{Fonts}
-
-%A summary of fonts is provided in Table \ref{tab: fonts}. 
-
-%\begin{table}[thb]
-%\centering
-%\caption{\label{font-table} Font guide. \vskip 3pt }
-%\label{tab: fonts}
-%\begin{tabular}{l|rl}
-%\hline \bf Type of Text & \bf Font Size & \bf Style \\ \hline
-%paper title & 14 pt &  \bf bold \\
-%authors & 10 pt &  \underline{email} underlined \\
-%abstract title & 12 pt &  \bf bold\\
-%abstract text & 10 pt &  \it italic\\
-%section titles & 12 pt & \bf bold \\
-%subsection titles & 11 pt & \bf bold \\
-%document text & 10 pt  & \\
-%captions & 9 pt & \sansserifformat{\captionsize sans-serif, \bf bold} \\
-%bibliography & 9 pt & \\
-%footnotes & 8 pt & \\
-%\hline
-%\end{tabular}
-%\end{table}
-
-
-\section{References} 
-
-List and number all bibliographical references in 9-point Times, single-spaced, at the end of your paper. When referenced in the text, enclose the citation number in square brackets.
-% for example \cite{Jones2015,Smith2015} and \cite{Smith2015}. 
-Where appropriate, include the name(s) of editors of referenced books.
+% List and number all bibliographical references in 9-point Times, single-spaced, at the end of your paper. When referenced in the text, enclose the citation number in square brackets.
+% % for example \cite{Jones2015,Smith2015} and \cite{Smith2015}. 
+% Where appropriate, include the name(s) of editors of referenced books.
 
 % if added before the last page, this command can help balancing columns
 %\addtolength{\textheight}{-.2cm} 
