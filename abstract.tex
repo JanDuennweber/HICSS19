@@ -60,9 +60,22 @@ Even with the latest IoT technology like networked sensors and simulations
 forecasting the collection times of megacities, practical implementations of 
 on-demand waste collection still have difficulties in keeping up with the 
 prognosticated improvements.
-One reason is that a collection vehicle driving from one heavily filled 
-container to another one needs more time than a vehicle following a fixed plan, 
-when the heavily filled containers are positioned far apart from each other. 
+A collection vehicle that drives obstinately from the most heavily filled 
+container to one with the fill-grade closest to that will obviously need 
+more time in the majority of cases than a vehicle following a fixed plan, 
+since heavily filled containers are probably positioned far apart from 
+each other. Finding a smarter route leads us to the classic vehicle routing
+problem (VRP~\cite{Dantzig59}), an instance of the Travelling Salesman
+Problem (TSP) with the added contraint that we need to return to the starting 
+point after visiting a fixed number of points, since the collection vehicle 
+has a limited capacity. Thus, we don't need to find the minimum Hamiltonian
+cicle through all the points but multiple circles forming some kind of
+clover leaf. However, finding the best route to collect the waste 
+containers does not only require to take account for the distances between 
+the single containers. Containers which are only filled to a certain level should
+be skipped, i.\,e. we are dealing with a instance of a dynamic route 
+planning problem, which is also the subject of more recent 
+research~\cite{Chen16}.
 
 
 
@@ -176,7 +189,9 @@ Third-order headings, as in this paragraph, are discouraged. However, if you mus
 
 \section{References} 
 
-List and number all bibliographical references in 9-point Times, single-spaced, at the end of your paper. When referenced in the text, enclose the citation number in square brackets, for example \cite{Jones2015,Smith2015} and \cite{Smith2015}. Where appropriate, include the name(s) of editors of referenced books.
+List and number all bibliographical references in 9-point Times, single-spaced, at the end of your paper. When referenced in the text, enclose the citation number in square brackets.
+% for example \cite{Jones2015,Smith2015} and \cite{Smith2015}. 
+Where appropriate, include the name(s) of editors of referenced books.
 
 % if added before the last page, this command can help balancing columns
 %\addtolength{\textheight}{-.2cm} 
