@@ -138,7 +138,7 @@ their benefits and points out some future perspectives.
 \label{sec:Regensburg}
 
 Our work in Regensburg focuses on improving the collection of biological waste~\cite{Burger18}.
-While other approaches toward the computer-aided routing of waste collection vehilces 
+While other approaches toward the computer-aided routing of waste collection vehicles 
 rely only on fill-level sensing~\cite{LundinOS17} or only on ACO-based path 
 computations~\cite{ismail09}, we combined both ideas. 
 
@@ -156,8 +156,8 @@ Simulations have shown, that
 the combination of these techniques can significantly reduce the time needs for the collection
 of waste~\cite{Sharmin16}. Since the present contracts with service providers or logistical
 obstacles often conflict with changes to the waste collection routes, possible time savings can be 
-computed but not realy be exploited in many places.
-Contralily, in Regensburg, we recently started applying route optimization and fill-level 
+computed but not really be exploited in many places.
+Contrarily, in Regensburg, we recently started applying route optimization and fill-level 
 sensing to the collection of the containers for biological waste.
 Figure~\ref{fig:container} shows one such container and the protection casing on the
 back which houses the electronics (shown in Figure~\ref{fig:electronics}) which we attached 
@@ -174,20 +174,20 @@ to it for monitoring the fill level.
 \end{figure}
 
 Regensburg established a novel program for the collection of biological waste in 2018 
-and equipped the city and its surrounds with 700 new containers. The novely of the program
+and equipped the city and its surrounds with 700 new containers. The novelty of the program
 allows us, computer scientists (headed by author Jan D{\"u}nnweber) and electrical 
 engineers (headed by his colleague Martin Schubert) at the {\it Technical 
 University of Applied Sciences} in Regensburg (OTH), to help forming it.
 Noteworthy as well, is that 700 containers are not too many. While the number
 of possible thorough paths, connecting all containers is tremendous ($\frac{n!}{2}$ is a 
 1719-digit number), there are only  $\tbinom {700}{2}$ ways to choose a interconnecting 
-route between an unorderd pair of containers, which is 
+route between an unordered pair of containers, which is 
 $\frac{700!}{2!(700 - 2)!}=\frac{700!}{2 \times (698)!}=\frac{699 \times 700}{2}=244650$ interconnections. Combinations vary, but the interconnections are static and can be stored.
 Therefore, we set up a database, which holds for half of the 700 containers ({\it one-way})
 a file with the distances connecting it to the remaining 699 candidates (244650 entries
 totally).
 
-To ascertain the profitableness of our undertakings, we also started with a simulation.
+To ascertain the profitability of our undertakings, we also started with a simulation.
 However, our simulation did not forecast the profits of ACO on arbitrary routes or the
 benefits from observing arbitrary containers. We computed a viable forecast for Regensburg.
 With the help of a group of students (David Burger, Vadim Dechand, 
@@ -197,27 +197,27 @@ Haris Shehzad and Markus Wildgruber), we could fill the mentioned
 After accompanying
 the waste collectors and recording the GPS positions of the containers and the time needs 
 for emptying them with a fitness tracking app on the smart phone, we requested the
-distances for all possible pairs from the {\it Google Maps} Web serivce by means of a 
+distances for all possible pairs from the {\it Google Maps} Web service by means of a 
 Java program, which the students have developed to export the distance data into the
 popular TSPLIB-format~\cite{tsplib90}. With this representation, our data can be 
 processed using Open-Source ACO-code and other TSP-solvers. Our routing software makes
-use of the Thomas St{\"u}tzle Impementation~\cite{Dorigo97} and we used the exact 
+use of the Thomas St{\"u}tzle Implementation~\cite{Dorigo97} and we used the exact 
 TSP-solver {\it Concorde}~\cite{applegate01} as a reference. 
 
 
 To integrate fill-level sensing into the route computations, started to cope with
 underfilled containers. While overfilled containers seem to be 
-a more urgend problem, it is difficult (or almost impossible) to send a vehicle  
-instantanously, when an overfilled container is detected. Planning collection 
+a more urgent problem, it is difficult (or almost impossible) to send a vehicle  
+instantaneously, when an overfilled container is detected. Planning collection 
 routes such that underfilled containers are skipped is much easier and saves time.
 That saved time is used to collect new containers. The recorded data about
 overfilled containers helps to position the new containers where they are needed.
-Thus, our waste management software, tackles both problems, underfilled containers direcly
+Thus, our waste management software, tackles both problems, underfilled containers directly
 (by leaving them our during the collection) and overfilled containers as well, 
 by finding the best positions for new containers in the long run. Instead of
 resetting the route computations when a container is added, removed or 
-re-positioned, we let ACO continouesly running, since it is known that the 
-swarm alorithm can adapts to its input~\cite{angus2005}.
+re-positioned, we let ACO continuously running, since it is known that the 
+swarm algorithm can adapts to its input~\cite{angus2005}.
 
 Master-student Josef Wei{\ss} (from Martin Schubert's group) set up the electronics
 shown in Figure~\ref{fig:electronics}: The larger board (on the right) holds an ultrasonic transceiver module and a low power µC. The smaller board (on the left holds) and a 
@@ -225,7 +225,22 @@ LoRa (Low Range) transceiver. We communicate the fill grade measured by the
 ultrasonic transceiver via a LoRa gateway. The costs for 10 of this {\it DIY}-devices 
 were below $1000$~\EUR{} and sponsored by {\tt kpit.com}.
 
-Using our simulation, we ..
+Using our simulation, we could predict that 10 sensors are enough to start
+benefiting from our software. To compute a trustworthy prediction, our simulation
+does not simply roll the dice to decide whether a sensor-equipped container can
+be skipped. Instead the probability for each container $i$ to be empty was 
+computed individually using the formula: $P(x_i)=q_i* \frac{c_i}{d_i}$. The value for 
+$q_i$ ranges between $0.1$ (overfull), $0.2$ (full), $0.3$ (half-full) and $0.5$ (empty)
+and was set accordingly to the average fill level of that container that we observed on
+the collection tours. Parameter $d_i$ takes account for the fact that waste containers 
+located near the city center are more likely found full and is set to $1.2$ for a container
+withing a $2$ kilometer circle around the center, $1.1$ withing $4$ kilometers and $0.9$ for 
+containers located more than $6$ kilometers away from the center. Parameter $c_i$ is weighted 
+accordingly to the number of waste containers next to it and set to $0.9$ when there is none or
+set to $1.1$ for up to $5$ neighboring containers or set to $1.3$ when there are $6$ or more.
+With that estimations, we predicted time savings of approximately one hour per day.
+Regensburg has just started to adapt the routes accordingly. Thus, we will soon
+know how many extra containers can be emptied within the saved time.
 
 \section{LevelSense and the PiP-IoT project}
 \label{sec:Christchurch}
