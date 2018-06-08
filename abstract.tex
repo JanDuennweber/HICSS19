@@ -11,6 +11,8 @@
 \documentclass[10pt]{article}
 \input{hicss51-packages.tex}
 \usepackage{blindtext}
+\usepackage{amsmath}
+\usepackage{eurosym}
 \newcommand{\sansserifformat}[1]{\fontfamily{cmss}{ #1}}%
 
 %\setlength\titlebox{5cm}
@@ -98,7 +100,7 @@ trucks, like the one Volvo started testing in Brussels
 recently~\cite{volvo17}.
 
 The approximate solutions presented in this paper are based on 
-the {\it ant colony optimization} (ACO~\cite{Dorigo04}). This 
+the {\it ant colony optimization} (ACO~\cite{Dorigo97}). This 
 approach has been proven suitable for dynamic VRP instances
 in a simulation, where the road network and the related 
 traffic were taken into account~\cite{Karadimas2008}. ACO is a {\it swarm intelligence}
@@ -132,23 +134,98 @@ put into practice, discusses the {\it lessons learned} from these projects,
 their benefits and points out some future perspectives.
 
 
-\section{Regensburg's Smart City Approach: Collecting Biological Waste more Efficiently}
+\section{The Collection of Biological Waste in Regensburg}
 \label{sec:Regensburg}
 
-Our work in Regensburg focuses on improving the collection of biological waste.
-Figure~\ref{fig:container} shows a container.
+Our work in Regensburg focuses on improving the collection of biological waste~\cite{Burger18}.
+While other approaches toward the computer-aided routing of waste collection vehilces 
+rely only on fill-level sensing~\cite{LundinOS17} or only on ACO-based path 
+computations~\cite{ismail09}, we combined both ideas. 
 
 \begin{figure}[h!]
-	% Use the relevant command to insert your figure file.
-	% For example, with the graphicx package use
+  % Use the relevant command to insert your figure file.
+  % For example, with the graphicx package use
     \centering
-	\includegraphics[trim={3cm 3cm 3cm 3cm}, clip,width=0.6\linewidth]{biobin}
-	% figure caption is below the figure
-	\caption{A Biological Waste Container equipped with a fill-level sensor}
-	\label{fig:container}       % Give a unique label
+  \includegraphics[trim={3cm 4cm 3cm 3cm}, clip,width=0.5\linewidth]{biobin}
+  % figure caption is below the figure
+  \caption{Biological Waste Container equipped with a fill-level sensor on the back}
+  \label{fig:container}       % Give a unique label
 \end{figure}
 
-\blindtext
+Simulations have shown, that 
+the combination of these techniques can significantly reduce the time needs for the collection
+of waste~\cite{Sharmin16}. Since the present contracts with service providers or logistical
+obstacles often conflict with changes to the waste collection routes, possible time savings can be 
+computed but not realy be exploited in many places.
+Contralily, in Regensburg, we recently started applying route optimization and fill-level 
+sensing to the collection of the containers for biological waste.
+Figure~\ref{fig:container} shows one such container and the protection casing on the
+back which houses the electronics (shown in Figure~\ref{fig:electronics}) which we attached 
+to it for monitoring the fill level.
+
+\begin{figure}[h!]
+  % Use the relevant command to insert your figure file.
+  % For example, with the graphicx package use
+    \centering
+  \includegraphics[trim={3cm 4cm 3cm 3cm}, clip,width=0.5\linewidth]{sensor}
+  % figure caption is below the figure
+  \caption{Detail picture showing the electronics attached to the container}
+  \label{fig:electronics}       % Give a unique label
+\end{figure}
+
+Regensburg established a novel program for the collection of biological waste in 2018 
+and equipped the city and its surrounds with 700 new containers. The novely of the program
+allows us, computer scientists (headed by author Jan D{\"u}nnweber) and electrical 
+engineers (headed by his colleague Martin Schubert) at the {\it Technical 
+University of Applied Sciences} in Regensburg (OTH), to help forming it.
+Noteworthy as well, is that 700 containers are not too many. While the number
+of possible thorough paths, connecting all containers is tremendous ($\frac{n!}{2}$ is a 
+1719-digit number), there are only  $\tbinom {700}{2}$ ways to choose a interconnecting 
+route between an unorderd pair of containers, which is 
+$\frac{700!}{2!(700 - 2)!}=\frac{700!}{2 \times (698)!}=\frac{699 \times 700}{2}=244650$ interconnections. Combinations vary, but the interconnections are static and can be stored.
+Therefore, we set up a database, which holds for half of the 700 containers ({\it one-way})
+a file with the distances connecting it to the remaining 699 candidates (244650 entries
+totally).
+
+To ascertain the profitableness of our undertakings, we also started with a simulation.
+However, our simulation did not forecast the profits of ACO on arbitrary routes or the
+benefits from observing arbitrary containers. We computed a viable forecast for Regensburg.
+With the help of a group of students (David Burger, Vadim Dechand, 
+Haris Shehzad and Markus Wildgruber), we could fill the mentioned 
+244650-entry database with concrete distances and average driving times. 
+
+After accompanying
+the waste collectors and recording the GPS positions of the containers and the time needs 
+for emptying them with a fitness tracking app on the smart phone, we requested the
+distances for all possible pairs from the {\it Google Maps} Web serivce by means of a 
+Java program, which the students have developed to export the distance data into the
+popular TSPLIB-format~\cite{tsplib90}. With this representation, our data can be 
+processed using Open-Source ACO-code and other TSP-solvers. Our routing software makes
+use of the Thomas St{\"u}tzle Impementation~\cite{Dorigo97} and we used the exact 
+TSP-solver {\it Concorde}~\cite{applegate01} as a reference. 
+
+
+To integrate fill-level sensing into the route computations, started to cope with
+underfilled containers. While overfilled containers seem to be 
+a more urgend problem, it is difficult (or almost impossible) to send a vehicle  
+instantanously, when an overfilled container is detected. Planning collection 
+routes such that underfilled containers are skipped is much easier and saves time.
+That saved time is used to collect new containers. The recorded data about
+overfilled containers helps to position the new containers where they are needed.
+Thus, our waste management software, tackles both problems, underfilled containers direcly
+(by leaving them our during the collection) and overfilled containers as well, 
+by finding the best positions for new containers in the long run. Instead of
+resetting the route computations when a container is added, removed or 
+re-positioned, we let ACO continouesly running, since it is known that the 
+swarm alorithm can adapts to its input~\cite{angus2005}.
+
+Master-student Josef Wei{\ss} (from Martin Schubert's group) set up the electronics
+shown in Figure~\ref{fig:electronics}: The larger board (on the right) holds an ultrasonic transceiver module and a low power µC. The smaller board (on the left holds) and a 
+LoRa (Low Range) transceiver. We communicate the fill grade measured by the 
+ultrasonic transceiver via a LoRa gateway. The costs for 10 of this {\it DIY}-devices 
+were below $1000$~\EUR{} and sponsored by {\tt kpit.com}.
+
+Using our simulation, we ..
 
 \section{LevelSense and the PiP-IoT project}
 \label{sec:Christchurch}
