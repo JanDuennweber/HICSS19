@@ -13,6 +13,8 @@
 \usepackage{blindtext}
 \usepackage{amsmath}
 \usepackage{eurosym}
+\usepackage{textcomp}
+\usepackage{multicol}
 \newcommand{\sansserifformat}[1]{\fontfamily{cmss}{ #1}}%
 
 %\setlength\titlebox{5cm}
@@ -22,7 +24,7 @@
 % smaller than 5cm (the original size).
 
 
-\title{Improving Waste Collection Procedures \\ In Practical Smart City Implementations}
+\title{Improving Bus Schedules and Waste Collection Routes \\ in Practical Smart City Implementations}
 
 \author{
   Jan D{\"u}nnweber  \\
@@ -33,74 +35,107 @@
   {\underline{amit.sarkar@ara.ac.nz}} \\\And
   Vimal Kumar Puthiyadath \\
  KPIT Technologies Ltd \\
-  {\underline{Vimal.Puthiyadath@kpit.com}} 
-  }
+  {\underline{Vimal.Puthiyadath@kpit.com}} \\\And
+  Omkar Barde \\
+ KPIT Technologies Ltd \\
+  {\underline{Omkar.Barde@kpit.com}} 
+ }
 
 \date{}
 
 \begin{document}
 \maketitle
 \begin{abstract}
-Computer-based Improvements to waste collection procedures are often a part of smart city 
-initiatives. When we envision an ideal waste collection vehicle, it will arrive at every
-container exactly at the time when it is fully loaded. Beyond doubt, this will 
-reduce traffic and support environmentally friendly intentions like an expansion 
-of waste separation as it will make more containers manageable. 
-An obvious difficulty of putting that vision into practice is that  
-collection vehicles cannot always be where they are needed. 
-Knowing the best time for emptying a container is insufficient for 
-finding the optimal collection route.
-Therefore, we compare three different approaches to reducing the waste collection
-times by the use of networked fill-level sensors: Regensburg,
-Christchurch and Pune. Our analysis shows that the most efficient collection schedules 
-result from adapting field-tested routes frequently on the basis of 
-current sensor measurements and shortcuts resulting from route 
+Computer-based Improvements of waste collection and public transport procedures are 
+often a part of smart city initiatives. When we envision an ideal bus, it will 
+primarily connect the most crowded bus stops. Similarly, an ideal waste collection 
+vehicle will arrive at every container exactly at the time when it is fully loaded. 
+Beyond doubt, this will
+reduce traffic and support environmentally friendly intentions like an expansion
+of waste separation, as it will make more containers manageable.
+An obvious difficulty of putting that vision into practice is that
+vehicles cannot always be where they are needed.           
+Knowing the best time for arriving at a certain position is insufficient for 
+finding the optimal route.
+Therefore, we compare four different approaches to optimized routing: 
+Regensburg, Christchurch and Bangalore and Malaysia. Our analysis shows 
+that the most efficient schedules           
+result from adapting field-tested routes frequently on the basis of
+sensor measurements and shortcuts resulting from route        
 optimization computations.
 \end{abstract}
 
 \section{Introduction}
 Even with the latest IoT technology like networked sensors and simulations
-forecasting the collection times of megacities, practical implementations of 
-on-demand waste collection still have difficulties in keeping up with the 
-prognosticated improvements.
-A collection vehicle that drives obstinately from the most heavily filled 
-container to one with the fill-grade closest to that will obviously need 
-more time in the majority of cases than a vehicle following a fixed plan, 
-since heavily filled containers are probably positioned far apart from 
-each other. Finding a smarter route leads us to the classic 
+forecasting the behaviour of the population of megacities, practical implementations 
+of on-demand public transport and smart waste collection still have difficulties 
+in keeping up with the prognosticated improvements.
+A vehicle that drives obstinately from the most crowded bus stop (or the 
+most heavily filled container, respectively) to one with the fill-grade closest 
+to that will obviously need more time in the majority of cases than a vehicle 
+following a fixed plan, 
+since the crowded bus stops and the heavily filled containers are probably 
+positioned far apart from 
+each other. 
+
+Finding a smarter route leads us to the classic 
 {\it vehicle routing problem} (VRP~\cite{Dantzig59}), an instance of the 
 {\it Travelling Salesman Problem (TSP)} with the added constraint that we 
 need to return to the starting point after visiting a fixed number of points, 
 since the collection vehicle has a limited capacity. 
 Thus, we don't need to find the minimum Hamiltonian
 circle through all the points but multiple circles forming some kind of
-clover leaf. However, finding the best route to collect the waste 
-containers does not only require to consider the distances between 
-the single containers. Containers which are only filled to a certain level should
-be skipped, i.\,e. we are dealing with a instance of a dynamic route 
+clover leaf. However, finding the best route does not only require to consider the distances between the single stops. Busses should leave out stops where no
+passengers are waiting and waste collectors should skip containers which are only 
+to a certain level, i.\,e. we are dealing with an instance of a dynamic route 
 planning problem, which is also the subject of more recent 
 research~\cite{Chen16}.
 
-There are $\frac{n!}{2}$ different routes connecting $n$ containers. 
-For comparing all routes between only $10$ containers, this means 
-3628800 routes must be analyzed. Modern waste collection
-vehicles can be loaded with $\approx 400$ container of 120 
+There are $\frac{n!}{2}$ different routes connecting $n$ positions. 
+For comparing all possible routes between only $10$ stops, this means 
+3628800 routes must be analyzed. While a typical bus line might 
+comprise $10$ stops, a modern waste collection
+vehicle can be loaded with $\approx 400$ containers of 120 
 liters~\cite{hyundai18}.
-$400!$ is a $882$-digit number. Taken into account that skipping 
-containers with little load, means the vehicle has to pickup an other
-one where it usually does not drive to, solving our dynamic VRP requires
+$400!$ is a $882$-digit number. 
+%, i.\,e. finding the best route 
+% for the waste collection using a brute force program is inconceivable. 
+Taken into account that skipping 
+containers with little load means, the vehicle has to pickup an other
+one, where it usually does not drive to, solving our dynamic VRP requires
 to solve a new problem of that size, every time when the fill-level
 measurements are updated. Nowadays, supercomputers can deal with 
 such problem sizes~\cite{Burkhovetskiy2017}. However, the
 presented projects deal with approximate solutions, which
 can be found using a standard PC or an on-board computer in
-the garbage truck. Therefore, the presented work might be relevant 
-for automating the navigation of future self-driving garbage 
+a bus or garbage truck. Therefore, the presented work might be relevant 
+for automating the navigation of future self-driving busses and garbage 
 trucks, like the one Volvo started testing in Brussels 
 recently~\cite{volvo17}.
 
-The approximate solutions presented in this paper are based on 
-the {\it ant colony optimization} (ACO~\cite{Dorigo97}). This 
+
+The rest of this paper is structured as follows: 
+Section~\ref{sec:aco} explains the {\it ant colony optimization} (ACO)
+% for solving VRP instances appoximately 
+and shows how %the cities 
+Regensburg 
+and Christchurch benefit from ACO and fill-level sensing for collecting 
+their waste containers. 
+Section~\ref{sec:kpit} introduces a different approach to minimizing routes
+using a greedy algorithm and shows two more practical implementations:
+The waste collection in Malaysia and the employee transport service of 
+Bangalore.
+Section~\ref{sec:concl} %looks back on the four projects,
+% which were all put into practice, 
+discusses the {\it lessons learned} %from these projects,
+%their benefits 
+and points out some future perspectives.
+
+\section{Routing by means of the Ant Colony Optimization}
+\label{sec:aco}
+
+The {\it ant colony optimization} is an approximate solution for TSP
+instances (ACO~\cite{Dorigo97}). This 
 approach has been proven suitable for dynamic VRP instances
 in a simulation, where the road network and the related 
 traffic were taken into account~\cite{Karadimas2008}. ACO is a {\it swarm intelligence}
@@ -118,23 +153,8 @@ by the most successful ants from preceding iterations, which are
 the ones whose pheromone trails did not evaporate until their 
 followers reached them, since they were on the shortest paths.
 
-The rest of this paper is structured as follows: 
-Section~\ref{sec:Regensburg} shows how the city of Regensburg benefits from using 
-fill-level sensing and ACO-based route optimization for collecting their biological
-waste containers. 
-Section~\ref{sec:Christchurch} introduces {\it LevelSense} in Christchurch, 
-an IoT-based approach to on-demand waste collection, which also uses ACO and is a 
-part of a larger {\it Smart City} initiative in New Zealand, the {\it PiP-IOT project}. 
-Section~\ref{sec:Pune} introduces another route optimization algorithm, which is used
-by {\tt kpit.com} for solving a related problem: Getting all the employees
-from various places in Pune to their their offices. 
 
-Section~\ref{sec:concl} looks back on the three projects, which were all 
-put into practice, discusses the {\it lessons learned} from these projects,
-their benefits and points out some future perspectives.
-
-
-\section{The Collection of Biological Waste in Regensburg}
+\subsection{Application 1: The Collection of Biological Waste in Regensburg}
 \label{sec:Regensburg}
 
 Our work in Regensburg focuses on improving the collection of biological waste~\cite{Burger18}.
@@ -146,46 +166,54 @@ computations~\cite{ismail09}, we combined both ideas.
   % Use the relevant command to insert your figure file.
   % For example, with the graphicx package use
     \centering
-  \includegraphics[trim={3cm 4cm 3cm 3cm}, clip,width=0.5\linewidth]{biobin}
+  \includegraphics[%trim={3cm 4cm 3cm 3cm}, clip,
+  width=0.95\linewidth]{electricbin}
   % figure caption is below the figure
-  \caption{Biological Waste Container equipped with a fill-level sensor on the back}
+  \caption{Container (left) and electronics (right)}
   \label{fig:container}       % Give a unique label
 \end{figure}
 
 Simulations have shown, that 
 the combination of these techniques can significantly reduce the time needs for the collection
 of waste~\cite{Sharmin16}. Since the present contracts with service providers or logistical
-obstacles often conflict with changes to the waste collection routes, possible time savings can be 
-computed but not really be exploited in many places.
+obstacles often conflict with changes to the waste collection routes, possible time savings could only be computed but not really be exploited in many places.
+
 Contrarily, in Regensburg, we recently started applying route optimization and fill-level 
 sensing to the collection of the containers for biological waste.
-Figure~\ref{fig:container} shows one such container and the protection casing on the
-back which houses the electronics (shown in Figure~\ref{fig:electronics}) which we attached 
-to it for monitoring the fill level.
-
-\begin{figure}[h!]
-  % Use the relevant command to insert your figure file.
-  % For example, with the graphicx package use
-    \centering
-  \includegraphics[trim={3cm 4cm 3cm 3cm}, clip,width=0.5\linewidth]{sensor}
-  % figure caption is below the figure
-  \caption{Detail picture showing the electronics attached to the container}
-  \label{fig:electronics}       % Give a unique label
-\end{figure}
+Figure~\ref{fig:container} (left) shows one such container and the protection casing on the
+back which houses our electronics. Actually, the
+right part of the picture with the detail view of the electronics shows an 
+earlier prototype
+where the electrical parts placed in the lid. The new box is smaller (making it more difficult
+to recognize single parts like our LoRa transmitter) and delivers correct data, even 
+if the lid of the container 
+is not closed.
 
 Regensburg established a novel program for the collection of biological waste in 2018 
 and equipped the city and its surrounds with 700 new containers. The novelty of the program
 allows us, computer scientists (headed by author Jan D{\"u}nnweber) and electrical 
 engineers (headed by his colleague Martin Schubert) at the {\it Technical 
-University of Applied Sciences} in Regensburg (OTH), to help forming it.
+University of Applied Sciences} in Regensburg (OTH), to contribute to the
+implementation.
 Noteworthy as well, is that 700 containers are not too many. While the number
 of possible thorough paths, connecting all containers is tremendous ($\frac{n!}{2}$ is a 
-1719-digit number), there are only  $\tbinom {700}{2}$ ways to choose a interconnecting 
+1719-digit number), there are only  $\tbinom {700}{2}$ ways to choose an interconnecting 
 route between an unordered pair of containers, which is 
 $\frac{700!}{2!(700 - 2)!}=\frac{700!}{2 \times (698)!}=\frac{699 \times 700}{2}=244650$ interconnections. Combinations vary, but the interconnections are static and can be stored.
 Therefore, we set up a database, which holds for half of the 700 containers ({\it one-way})
 a file with the distances connecting it to the remaining 699 candidates (244650 entries
 totally).
+
+\begin{figure}[h!]
+  % Use the relevant command to insert your figure file.
+  % For example, with the graphicx package use
+    \centering
+  \includegraphics[%trim={3cm 4cm 3cm 3cm}, clip,
+  width=0.95\linewidth]{excel}
+  % figure caption is below the figure
+  \caption{Distances in an Excel sheet}
+  \label{fig:excel}       % Give a unique label
+\end{figure}
 
 To ascertain the profitability of our undertakings, we also started with a simulation.
 However, our simulation did not forecast the profits of ACO on arbitrary routes or the
@@ -193,6 +221,9 @@ benefits from observing arbitrary containers. We computed a viable forecast for 
 With the help of a group of students (David Burger, Vadim Dechand, 
 Haris Shehzad and Markus Wildgruber), we could fill the mentioned 
 244650-entry database with concrete distances and average driving times. 
+Figure~\ref{fig:excel} shows the first 19 entries of this database in an
+Excel-sheet. Actually, we maintain this data in Redis to benefit from caching
+when the same distances are requested repeatedly~\cite{Carlson13}. 
 
 After accompanying
 the waste collectors and recording the GPS positions of the containers and the time needs 
@@ -202,10 +233,24 @@ Java program, which the students have developed to export the distance data into
 popular TSPLIB-format~\cite{tsplib90}. With this representation, our data can be 
 processed using Open-Source ACO-code and other TSP-solvers. Our routing software makes
 use of the Thomas St{\"u}tzle Implementation~\cite{Dorigo97} and we used the exact 
-TSP-solver {\it Concorde}~\cite{applegate01} as a reference. 
+TSP-solver {\it Concorde}~\cite{applegate01} as a reference. Figure~\ref{fig:optmap}
+shows the route we computed for connecting 11 containers in red. This route is 
+11 kilometers long and could be shortened to 7 kilometers (green route) after
+leaving out two containers, which we identified as empty containers using 
+our fill-level sensors.
 
+\begin{figure}[h!]
+  % Use the relevant command to insert your figure file.
+  % For example, with the graphicx package use
+    \centering
+  \includegraphics[%trim={3cm 4cm 3cm 3cm}, clip,
+  width=0.95\linewidth]{optmap}
+  % figure caption is below the figure
+  \caption{Container (left) and electronics (right)}
+  \label{fig:optmap}       % Give a unique label
+\end{figure}
 
-To integrate fill-level sensing into the route computations, started to cope with
+To integrate fill-level sensing into the route computations, we started to cope with
 underfilled containers. While overfilled containers seem to be 
 a more urgent problem, it is difficult (or almost impossible) to send a vehicle  
 instantaneously, when an overfilled container is detected. Planning collection 
@@ -242,15 +287,225 @@ With that estimations, we predicted time savings of approximately one hour per d
 Regensburg has just started to adapt the routes accordingly. Thus, we will soon
 know how many extra containers can be emptied within the saved time.
 
-\section{LevelSense and the PiP-IoT project}
+\subsection{Application 2: LevelSense\texttrademark ~and the PiP-IoT project}
 \label{sec:Christchurch}
 
-\blindtext
+While New Zealand may be considered a small country, its smart city ambitions are anything but small. For the last two consecutive years New Zealand earned more recognitions for their smart cities initiatives than any other country in the annual Smart City Asia Pacific Awards (SCAPA), a competitive benchmarking program conducted by Council Associate Partner IDC.
+Following the significant earthquakes of 2010/11, Christchurch City Council (CCC) put aside funds for ‘Sensing Cities’ initiatives. In November 2015, the Smart Cities programme was initiated to carry out rapid proof of concept projects.
 
-\section{Collecting Employees at {\tt kpit.com}}
-\label{sec:Pune}
+\begin{figure}[h!]
+  % Use the relevant command to insert your figure file.
+  % For example, with the graphicx package use
+    \centering
+  \includegraphics[%trim={3cm 4cm 3cm 3cm}, clip,
+                   width=0.95\linewidth]{binmon}
+  % figure caption is below the figure
+  \caption{LevelSense\texttrademark ~in container lid (left) 
+           and the Christchurch online monitoring app (right)}
+  \label{fig:binmon}       % Give a unique label
+\end{figure}
 
-\blindtext
+More than 50\% of the world’s population lives in cities by 2050, it will be more the 75\%. While the world’s cities only cover two per cent of the global land area, they are responsible for 70\% of greenhouse gas emissions and the global climate change.
+As a consequence, we urgently need sustainable solutions to combat these city-focused issues. Smart garbage collection, energy-saving and efficient street and traffic lighting, water and wastewater management, and the reduction of $CO_2$ emissions from motor vehicles are all essential elements of 
+these solutions. Christchurch is using smart sensors to ensure rubbish bins are emptied at the right time.
+
+Overflowing public rubbish bins are a frequent source of complaints from residents. City’s rubbish collection contractors work constantly to empty the city’s bins but before they arrive at the site they don't know whether they’ll find an empty bin, a full one or an overflowing mess. 
+The bin sensor trial uses LevelSense\texttrademark ~sensors, which were developed by Christchurch company PiP IoT, to check rubbish levels. The sensors allow city council’s contractors to recognise optimal waste collection times and recommend optimal collection routes. As a result, the council's operational managers can find out whether they have the right number of bins in the right places to meet public demand. 
+
+\begin{figure*}[h]
+  % Use the relevant command to insert your figure file.
+  % For example, with the graphicx package use
+    \centering
+  \includegraphics[%trim={3cm 4cm 3cm 3cm}, clip,
+                   width=0.795\linewidth]{malaysia}
+  % figure caption is below the figure
+  \caption{Garbage truck suspension monitoring}
+  \label{fig:malaysia}       % Give a unique label
+\end{figure*}
+
+\subsection{Level Sensor Specifications}
+
+Level Sense sensors where built for ultra-rugged tank and bin level measurement with GPS position 
+and movement monitoring. The devices monitor the fill levels of remote tanks, bins or other 
+container assets in real time for improved service management outcomes. \\
+
+The key features are
+\begin{itemize}
+\item Tilt sensing capability 
+\item GPS location and Geo-fencing capabilities
+\item Tampering and orientation detection
+\item Shock and vibration sensing
+\item Temperature measurement
+\item Expected battery life of 5 years
+\item Low Power Network - LPWAN Connectivity
+\item Real time analytics
+\item Mobile / Web Reporting
+\item SIGFOX Class 0 Certified
+\end{itemize}
+
+\subsubsection{How the Sensors Work}
+
+A small unit mounted on the inside of the bin lid uses sonar, which detects the rubbish level and transmits readings to the monitoring system (see figure~\ref{fig:binmon}, left).
+
+A dashboard shows the status of each bin. When rubbish reaches a specified level, the system alerts the contractor that the bin needs emptying.
+
+\subsubsection{Anticipated Outcomes}
+
+\begin{itemize}
+	\item
+	Reduction in CO2 emissions and pollution:  fewer rubbish collection trucks on the road for less time, which means lower fuel consumption and lower greenhouse gas emissions. Fewer collection trucks on the road will also mean less noise pollution, air pollution, and less wear and tear on our road network.
+	\item
+	Reduction in operational costs: managing waste takes a large portion of our rates. Bin level sensors and monitoring solutions have been known to reduce waste collection costs by up to 50 \% (fewer collections mean less money spent on driver hours, fuel and truck maintenance).
+	\item
+	Significant reduction in overflowing rubbish bins: overflowing rubbish is a breeding ground for bacteria, insects and pests because of accumulated rubbish. It’s a public nuisance and unpleasant for residents and visitors to our garden city.
+	\item
+	Identifies the use (or misuse) of public rubbish bins: for example, sudden spikes in rubbish levels at night can indicate that household rubbish is being dumped illegally from residents or campers. 
+\end{itemize}
+
+CCC selected local company PiP IoT for a pilot to test new sensor technology in the combat against overflowing rubbish bins with the objective of creating operational efficiencies and an enhanced streetscape for citizens
+
+PiP IoT has rolled out LevelSense\texttrademark devices to ten bins around rubbish trouble spots, including a city park and a retail area. Notifications are sent to contractors’ phones and bin status across the city can be viewed in an online dashboard telling them how full each bin is (see figure~\ref{fig:binmon}, right). Rubbish levels are also being tracked, providing a graphic illustration of when the bins are used most.
+
+
+% The PiP LevelSense™ devices include GPS location along with tilt and shock monitoring capability and temperature sensing in case of a fire. They use a battery that will last for three to five years.
+% Ed Hadfield, Operations Manager at Recreational Services, the CCC contractor which manages the bins, said "The cool thing about this is that it's allowing us to utilise our resources where they're needed the most”.
+% Smart Cities Programme Manager Teresa McCallum says the project shows how technology can be used to solve everyday problems.
+% “We are really excited about the potential of these bin sensors to clean up an issue that causes a lot of annoyance and inconvenience to the community."
+
+% "It is another example of the way Smart Cities is working alongside local companies to foster innovation that benefits our city and can be used throughout New Zealand and beyond. Apart from being more efficient, it’s an innovative way to make our city smarter, more sustainable, and get rid of overflowing rubbish complaints for good.”
+
+
+
+
+\subsubsection{Using ACO Update Rules}
+
+For finding the optimal route connecting the full (or almost full) containers, Christchurch
+makes use of ACO as well. 
+% In the traveling salesman problem, a set of cities is given and the distance between each of them is known. The goal is to find the shortest tour that allows each city to be visited once and only once. In more mathematical terms, the goal is to find a Hamiltonian tour of minimal length on a fully connected graph. In ant colony optimization, the problem is attacked by simulating a number of artificial ants moving on a graph that encodes the problem itself: each vertex represents a city and each edge represents a connection between two cities. A variable called pheromone is associated with each edge and can be read and modified by ants. Ant colony optimization is an iterative algorithm. At each iteration, a number of artificial ants are considered. Each of them builds a solution by walking from vertex to vertex on the graph with the constraint of not visiting any vertex that it has already visited in its walk. At each step of the solution construction, an ant selects the following vertex to be visited according to a stochastic mechanism that is biased by the pheromone: when in vertex i, the following vertex is selected stochastically among the previously unvisited ones. In particular, if j has not been previously visited, it can be selected with a probability that is proportional to the pheromone associated with edge (i, j). At the end of an iteration, on the basis of the quality of the solutions constructed by the ants, the pheromone values are modified in order to bias ants in future iterations to construct solutions similar to the best ones previously constructed.
+% Each ant builds a solution by using
+Th algorithm makes use if two types of locally accessible information: 
+\begin{enumerate}
+\item problem-specific information, i.e., distance among cities, and 
+\item information added by ants during previous iterations of the algorithm, such as pheromone values.
+\end{enumerate} 
+While building a solution, each ant collects information on the problem characteristics and on its own performance, and uses this information to modify the representation of the problem. The modified representation is the new environment shared by all the ants and seen locally by other ants. 
+% The representation of the problem is modified in such a way that information contained in past 
+% good solutions can be exploited to build new better solutions. As mentioned earlier, 
+This form of indirect communication mediated by the environment is called stigmergy, and is typical of social insects~\cite).
+% Suppose an ant k (in m ants) is at city i, and Nk is the set of k’s unvisited cities. Then, the ant chooses city j to visit next in a probabilistic way as follows:
+
+% Here, η(i,j) represents the problem-specific information, and in TSP, it is the reciprocal of the distance between two cities i and j. τ(i,j) represents the information about the ant trails, i.e., the pheromone value on the route between two cities i and j. α and β are non-negative constants, and their values determine whether η (local information) or τ (global information) has more weight in the formula. τ(i,j) is updated accordingly to the following rules, when one iteration is done.
+
+% Here, Tk represents the set of all routes from the start city to the goal city, and Lkrepresents the collective distance from the start city to the goal city. In ant-colony algorithms, the pheromone value added to a specific route is determined by the reciprocal of the total distance and the pheromone also disappears over time, where ρ represents the evaporation rate, such that newly added pheromone has more influence than old pheromone additions. Thus, after many of iterations, one can expect to obtain an approximately optimal route selection.
+% As demonstrated here, ACO algorithms have been applied to dynamic versions of the TSP, where either the distance between some pairs of cities changes, or cities are dynamically added or removed from the set of cities to be visited. Additionally, an ACO algorithm has also been applied to dynamic vehicle routing problems, showing good behaviour on randomly generated problem instances and on real-world instances as well (Dorigo and Gambardella, 1997). This makes it the perfect algorithm for our dynamic waste collection vehicle routing scenario.
+The waste collection problem in Christchurch poses a dynamic instance of the TSP, where cities are represented by containers and containers which are (almost) empty are not collected. Containers which are full or almost full will appear in the bin collection route dashboard and will be collected.
+ACO has shown good performance on randomly generated problem instances and on real-world instances as well. This makes it the perfect algorithm for Christchurch's 
+dynamic vehicle routing scenario.
+
+\section{The greedy approach to the travelling salesman problem}
+\label{sec:kpit}
+
+\subsubsection*{Steps}
+
+\begin{enumerate}
+\item Calculate transport times and distances between all stops, e.g. pickup and destination locations, as well as vehicle start locations.
+\item Based on the information collected in step 1, generate routes and assign vehicles. The primary  constraint is that the total travel time for the first person to board the vehicle should not exceed 1.5 times the time taken for him to reach the destination had he chose his direct transport option.
+\item To go through possible options we have used simulated annealing and threshold-accepting algorithms. For each node (stop), the eligible (satisfying time \& capacity constraints) neighbors are evaluated to form paths and the ones which meet the criteria (serve maximum demand with shortest path) are selected. The acceptance criteria considers aspects like remaining capacity, direction deviation from the destination and total travel time.
+\item Since this is a greedy approach, this algorithm is susceptible to choice of first location and hence a customized logic is developed to run it for a set of feasible origins and best possible solution which gives minimum number of resources is chosen.
+\end{enumerate}
+
+
+\subsection{Application 1: The Malaysia Garbage Initiative}
+\label{sec:Malaysia}
+
+Malaysia is one of the trend-setters concerning smart city activities and their garbage collection initiative is unique in multiple aspects. The city does not only encompass the collection of garbage 
+in a smart manner but it also takes into account the fleet of collection trucks and their maintenance 
+to ensure availability and better framework to manage the contingencies that may occur. 
+
+\begin{figure}[h!]
+  % Use the relevant command to insert your figure file.
+  % For example, with the graphicx package use
+    \centering
+  \includegraphics[%trim={3cm 4cm 3cm 3cm}, clip,
+                   width=0.95\linewidth]{geofence}
+  % figure caption is below the figure
+  \caption{Real-time routing}
+  \label{fig:geofence}       % Give a unique label
+\end{figure}
+
+For monitoring the garbage collection, Malaysia's garbage trucks are equipped with  
+leaf spring sensors measuring the vehicles' suspension levels. 
+The measured data and the GPS positions of the respective trucks can be visualized 
+in a Web App and they are also used as input of the 
+command center application for coordinating the trucks dynamically. 
+The other parameters processed by this 
+application comprise static information, such as the truck parking locations,
+the bin locations and time estimates before a bin is full. Using these data,
+the Malaysian authorities can observe the amount of the loaded garbage at each 
+location, which helps them to avoid vehicle overloading and truck breakdowns.
+Figure~\ref{fig:malaysia} shows how the components of this IoT 
+infrastructure work together. The MEDS ({\it Mechanical Engineering Design Service}) 
+is was developed by {\tt kpit.com}'s engineering team to connect a microcontroller 
+to the VTS ({\it Vehicle Tracking System}). This microcontroller 
+converts the measured deflection on the leaf suspension to payload weight and uses 
+the GSM network to transmit the data back to the backend server.
+
+The vehicle tracking system makes use of geo fencing to track discrepancies between the
+planned and the actually driven routes (see figure~\ref{fig:geofence}). 
+Comprehensive reports of every vehicle's trip history, map views and the cargo 
+weight details are available in the Web App at the click of a button.
+
+
+\subsection{Application 2: Optimized Bus Routing for Collecting Employees in Bangalore}
+\label{sec:Bangalore}
+
+The costs of transporting employees is a concern for many companies. Especially in India, 
+where the number of employees is high in many of the companies these costs are huge: 
+Employee transport costs are the third highest cost after employee salaries and rentals.
+Therefore, minimizing these costs is of vital importance.
+
+The {\tt kpit.com} initiative was undertaken to find minimal routes and also minimize the
+number of vehicles required to transport employees located at various location in the 
+metro city of Bangalore.
+
+\subsubsection*{Inputs}
+
+\begin{itemize}
+\item Demand at every stop
+\item Stop locations 
+\item Available fleet and their corresponding capacities
+\end{itemize}
+
+\begin{figure*}
+  % Use the relevant command to insert your figure file.
+  % For example, with the graphicx package use
+    \centering
+  \includegraphics[%trim={3cm 4cm 3cm 3cm}, clip,
+                   width=0.795\linewidth]{employees}
+  % figure caption is below the figure
+  \caption{Employee collection}
+  \label{fig:employees}       % Give a unique label
+\end{figure*}
+
+\subsubsection*{Constraints}
+
+\begin{itemize}
+\item Travel time for the first passenger who boards the vehicle should not be more than 1.5 times the time he would take to reach office using his own transport.
+\item The total demand should not exceed the capacity of vehicle
+\end{itemize}
+
+%The solution approach is based on travelling salesman approach. 
+% We have used the greedy approach to reduce computations and time to converge.
+
+% \subsection{Algorithm Benchmarking}
+
+% Collecting the waste of modern cities within the scheduled time interval is a challenging job and it is indeed a global issue.  Considering the universal aspect and the value it brings to the society, it is not only important but also cost efficient if best practices are shared to avoid reinventing the wheel.
+% In this section we are benchmarking the three different solutions.
+
+
+
+% The emerging trend of countries transitioning towards smart cities is ever-growing with the aim of enhancing the quality of living for citizens through smart technologies. And with an estimation that 66 percent of the world’s population will be living in cities by 2050, the importance of creating an improved system is crucial. Considering the population explosion that is foreseen in Asian countries, this is a major socio-economic driver.
+
 
 \section{Conclusion and Future Perspectives}
 \label{sec:concl}
