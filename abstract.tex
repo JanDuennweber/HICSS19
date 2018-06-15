@@ -260,7 +260,7 @@ use of the Thomas St{\"u}tzle Implementation~\cite{Dorigo97} and we used the exa
 TSP-solver {\it Concorde}~\cite{applegate01} as a reference. 
 The recorded data and container-specific properties, such as the distance of
 a container to the city center and the number of neighboring containers, helped 
-us to determine realisitc probabilites for the containers to be empty at collection
+us to determine realistic probabilities for the containers to be empty at collection
 time in our simulation. The resulting forecasts were used to select the first 
 10 containers which we equipped with real electronics.
 Figure~\ref{fig:optmap}
@@ -335,7 +335,7 @@ New Zealand may be considered a small country, but its smart city ambitions are
 anything but small. For the last two consecutive years New Zealand earned a remarkable amount of honors for its smart cities innovations in the annual Smart City Asia Pacific Awards (SCAPA), a competitive benchmarking program conducted by Council Associate Partner IDC.
 In reply to the disastrous earthquakes of 2010/11, Christchurch City Council (CCC) put aside funds for ‘Sensing Cities’ initiatives. In November 2015, the Smart Cities programme was initiated to carry out rapid proof of concept projects.
 
-With 3 more years background, the Chrischurch projects are a bit
+With 3 more years background, the Christchurch projects are a bit
 more advanced than the work in Regensburg and the results matter beyond the 
 borders of New Zealand: More than 50\% of the world’s population lives in cities by 2050, it will be more the 75\%. While the world’s cities only cover two per cent of the global land area, they are responsible for 70\% of greenhouse gas emissions and the global climate change.
 As a consequence, we urgently need sustainable solutions to combat these city-focused issues. The reduction of $CO_2$ emissions from motor vehicles are all essential elements of these solutions. 
@@ -378,7 +378,7 @@ but when they arrived at a bin, before the introduction of LevelSense\texttradem
 PiP IoT developed LevelSense\texttrademark ~primarily to avoid overflowing public 
 rubbish bins, which where a frequent source of complaints from residents.
 Though, with the LevelSense\texttrademark ~devices, multiple other enhancements 
-are anticiptated.
+are anticipated.
 
 \begin{itemize}
 	\item
@@ -445,7 +445,7 @@ PiP IoT has rolled out LevelSense\texttrademark ~devices to bins around rubbish 
 \subsubsection{Updating and Distributing Information}
 
 For finding the optimal route connecting the full (or almost full) containers, Christchurch
-pioneered in the use of ACO (Actually, the Christchuch implemetation served as an 
+pioneered in the use of ACO (Actually, the Christchurch implementation served as an 
 exemplar for the Regensburg project described in section~\ref{sec:Regensburg}).
 % In the traveling salesman problem, a set of cities is given and the distance between each of them is known. The goal is to find the shortest tour that allows each city to be visited once and only once. In more mathematical terms, the goal is to find a Hamiltonian tour of minimal length on a fully connected graph. In ant colony optimization, the problem is attacked by simulating a number of artificial ants moving on a graph that encodes the problem itself: each vertex represents a city and each edge represents a connection between two cities. A variable called pheromone is associated with each edge and can be read and modified by ants. Ant colony optimization is an iterative algorithm. At each iteration, a number of artificial ants are considered. Each of them builds a solution by walking from vertex to vertex on the graph with the constraint of not visiting any vertex that it has already visited in its walk. At each step of the solution construction, an ant selects the following vertex to be visited according to a stochastic mechanism that is biased by the pheromone: when in vertex i, the following vertex is selected stochastically among the previously unvisited ones. In particular, if j has not been previously visited, it can be selected with a probability that is proportional to the pheromone associated with edge (i, j). At the end of an iteration, on the basis of the quality of the solutions constructed by the ants, the pheromone values are modified in order to bias ants in future iterations to construct solutions similar to the best ones previously constructed.
 % Each ant builds a solution by using
@@ -479,7 +479,7 @@ will be collected, once a vehicle is near it.
 \label{sec:kpit}
 
 Regensburg's project partner {\tt kpit.com} has been working on the use of TSP solvers
-for vehicle routing problems in two former projects: One was focussed on collecting 
+for vehicle routing problems in two former projects: One was focused on collecting 
 waste and another one was focused on scheduling busses.
 
 Both projects started from a brute-force method, i.\,e., a computer program that
@@ -487,7 +487,7 @@ compares all possible routes. This method was improved using a greedy approach.
 Similarly to ACO, the main idea in the greedy algorithm is {\it local} optimization,
 i.\,e., the algorithm picks what seems to be the best thing to do at a particular time, instead of considering the global situation. In comparison with ACO,
 the greedy algorithm finds approximate solutions using a more coarsely granular
-procedure leiding to an increase of incaccuracy but also to an increase in performance
+procedure leading to an increase of inaccuracy but also to an increase in performance
 in many cases. 
 In terms of swarm intelligence, the greedy approach is closer to the {\it Monarch
 Butterfly Optimization} (MBO) than to ACO~\cite{chen17} (although our implementation
@@ -512,7 +512,7 @@ resources) is chosen.
   % For example, with the graphicx package use
     \centering
   \includegraphics[%trim={3cm 4cm 3cm 3cm}, clip,
-                   width=0.795\linewidth]{employees}
+                   width=0.8795\linewidth]{employees}
   % figure caption is below the figure
   \caption{Employee collection}
   \label{fig:employees}       % Give a unique label
@@ -525,7 +525,7 @@ thus, capturing all the stops.
 The above description is about routing busses collecting employees. 
 However, it can be fine tuned for routing waste collection vehicles as well.
 Interestingly, {\tt kpit.com} implemented this use case in Malaysia without
-container sensors. Instead of monitoring the contaiers, the collection
+container sensors. Instead of monitoring the containers, the collection
 vehicle load was monitored, allowing for a predictive estimation of the
 container fill grades.
 
@@ -619,7 +619,38 @@ Figure~\ref{fig:employees}) makes use of the greedy approach with the follwing s
 \section{Conclusion and Future Perspectives}
 \label{sec:concl}
 
-\blindtext
+In this work, we have analyzed and compared the vehicle routing procedures used in four practical 
+smart city implementations. Our analysis has shown that the fundamental IoT approach, allowing
+people to order on-demand (using their phone or a signal button at the bus stop), can be improved 
+significantly by route optimization algorithms. The analysis of the waste collection projects has
+also shown that the combination of processing fill level signals with route optimization leads
+to the best collection times.
+
+However, there is also a trade-off between finding the best schedule or route and taking into
+account the specific requirements of a particular application. While ACO can lead to a shorter 
+route than the greedy algorithm, applications like the employee collection must
+cope with time windows~\cite{Kirci16}. a better utilization of busses is not no more 
+beneficial, when it comes for the price of employees arriving late at work. A specific characteristic
+of both, the Bangalore and the Malaysia use case was that arbitrary deviations from the  
+collections plans cannot be tolerated. This additional constraint is always given,
+when a route planning algorithm is applied to a vehicle with a limited load capacity
+or operating distance~\cite{Wang17}.
+This observation from project that were all (at least partially) implemented in 
+practice distinguishes our work from simulation experiments that are often aimed
+at improving route plans at all costs. The discussed experiences with the
+discrepancies between theoretical and practical time savings can help
+estimating the limitations of futuristic projects targeted at fully 
+automatized public transport or waste collection.
+
+Our next plans contain an improvement of the reliability of the employed 
+forecasts by the use of more sensors and more detailed data (including e.\,g. 
+loop ways and one-way streets). Especially in the narrow lanes of the 
+Regensburg city center, the shortest way is not always the fastest and
+the traveling times predicted by the Google Web service can be infeasible
+for a garbage truck. However, the time saving which we could prove for all
+projects let already rate all of them as a success.
+
+
 
 % \section{References} 
 
