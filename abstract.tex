@@ -17,6 +17,9 @@
 \usepackage{multicol}
 \newcommand{\sansserifformat}[1]{\fontfamily{cmss}{ #1}}%
 
+
+
+
 %\setlength\titlebox{5cm}
 
 % You can expand the titlebox if you need extra space
@@ -42,6 +45,11 @@
  }
 
 \date{}
+\makeatletter
+\renewcommand*{\@seccntformat}[1]{%
+  \csname the#1\endcsname\quad
+}
+\makeatother
 
 \begin{document}
 \maketitle
@@ -58,11 +66,11 @@ vehicles cannot always be where they are needed.
 Knowing the best time for arriving at a certain position is insufficient for 
 finding the optimal route.
 Therefore, we compare four different approaches to optimized routing: 
-Regensburg, Christchurch and Bangalore and Malaysia. Our analysis shows 
+Regensburg, Christchurch, Malaysia and Bangalore. Our analysis shows 
 that the most efficient schedules           
 result from adapting field-tested routes frequently on the basis of
 sensor measurements and shortcuts resulting from route        
-optimization computations.
+optimizing computations.
 \end{abstract}
 
 \section{Introduction}
@@ -70,8 +78,8 @@ Even with the latest IoT technology like networked sensors and simulations
 forecasting the behaviour of the population of megacities, practical implementations 
 of on-demand public transport and smart waste collection still have difficulties 
 in keeping up with the prognosticated improvements.
-A vehicle that drives obstinately from the most crowded bus stop (or the 
-most heavily filled container, respectively) to one with the fill-grade closest 
+A vehicle that drives obstinately from the most crowded bus stop (respectively, the 
+most heavily filled container) to one with the fill-grade closest 
 to that will obviously need more time in the majority of cases than a vehicle 
 following a fixed plan, 
 since the crowded bus stops and the heavily filled containers are probably 
@@ -86,7 +94,7 @@ since the collection vehicle has a limited capacity.
 Thus, we don't need to find the minimum Hamiltonian
 circle through all the points but multiple circles forming some kind of
 clover leaf. However, finding the best route does not only require to consider the distances between the single stops. Busses should leave out stops where no
-passengers are waiting and waste collectors should skip containers which are only 
+passengers are waiting and waste collectors should skip containers which are filled only 
 to a certain level, i.\,e. we are dealing with an instance of a dynamic route 
 planning problem, which is also the subject of more recent 
 research~\cite{Chen16}.
@@ -100,16 +108,16 @@ liters~\cite{hyundai18}.
 $400!$ is a $882$-digit number. 
 %, i.\,e. finding the best route 
 % for the waste collection using a brute force program is inconceivable. 
-Taken into account that skipping 
+Skipping 
 containers with little load means, the vehicle has to pickup an other
-one, where it usually does not drive to, solving our dynamic VRP requires
-to solve a new problem of that size, every time when the fill-level
+one, where it usually does not drive to. Thus, solving the dynamic VRP 
+requires to solve a new problem of that size, every time when the fill level
 measurements are updated. Nowadays, supercomputers can deal with 
-such problem sizes~\cite{Burkhovetskiy2017}. However, the
-presented projects deal with approximate solutions, which
-can be found using a standard PC or an on-board computer in
-a bus or garbage truck. Therefore, the presented work might be relevant 
-for automating the navigation of future self-driving busses and garbage 
+such problem sizes~\cite{Burkhovetskiy2017}. However, this work 
+presents four projects based on approximate solvers, which
+can run a standard PC or an on-board computer. % in a bus or garbage truck. 
+Therefore, the presented work is relevant 
+for automating the navigation of autonomous busses and robotic garbage 
 trucks, like the one Volvo started testing in Brussels 
 recently~\cite{volvo17}.
 
@@ -119,28 +127,28 @@ Section~\ref{sec:aco} explains the {\it ant colony optimization} (ACO)
 % for solving VRP instances appoximately 
 and shows how %the cities 
 Regensburg 
-and Christchurch benefit from ACO and fill-level sensing for collecting 
+and Christchurch benefit from ACO and fill level sensing for collecting 
 their waste containers. 
 Section~\ref{sec:kpit} introduces a different approach to minimizing routes
-using a greedy algorithm and shows two more practical implementations:
+be means of a greedy algorithm and shows two more practical implementations:
 The waste collection in Malaysia and the employee transport service of 
 Bangalore.
 Section~\ref{sec:concl} %looks back on the four projects,
 % which were all put into practice, 
-discusses the {\it lessons learned} %from these projects,
+discusses the lessons learned %from these projects,
 %their benefits 
 and points out some future perspectives.
 
-\section{Routing by means of the Ant Colony Optimization}
+\section{Intelligent Routing by means of the Ant Colony Optimization (ACO)}
 \label{sec:aco}
 
 The {\it ant colony optimization} is an approximate solution for TSP
 instances (ACO~\cite{Dorigo97}). This 
-approach has been proven suitable for dynamic VRP instances
+approach has also been proven suitable for dynamic VRP instances
 in a simulation, where the road network and the related 
 traffic were taken into account~\cite{Karadimas2008}. ACO is a {\it swarm intelligence}
 procedure, i.\,e. not an individual (a simulated ant in the case of 
-ACO) solves a problem but a group. For finding optimal routes,
+ACO) solves the problem but a group. For finding optimal routes,
 the simulation starts with letting the ants take random paths
 until they reach their destination. This random walk is optimized
 iteratively: each ant leaves a pheromone trail behind it which
@@ -149,8 +157,8 @@ the pheromone intensity of the shorter paths increases because
 whenever a simulated ant can choose among multiple paths, it takes
 the one with the highest pheromone intensity. This means, in higher
 iterations, the paths are no more randomly chosen but influenced 
-by the most successful ants from preceding iterations, which are
-the ones whose pheromone trails did not evaporate until their 
+by the most successful ants from preceding iterations. These are
+the ants whose pheromone trails did not evaporate until their 
 followers reached them, since they were on the shortest paths.
 
 
@@ -159,7 +167,7 @@ followers reached them, since they were on the shortest paths.
 
 Our work in Regensburg focuses on improving the collection of biological waste~\cite{Burger18}.
 While other approaches toward the computer-aided routing of waste collection vehicles 
-rely only on fill-level sensing~\cite{LundinOS17} or only on ACO-based path 
+rely only on fill level sensing~\cite{LundinOS17} or only on ACO-based path 
 computations~\cite{ismail09}, we combined both ideas. 
 
 \begin{figure}[h!]
@@ -175,22 +183,25 @@ computations~\cite{ismail09}, we combined both ideas.
 
 Simulations have shown, that 
 the combination of these techniques can significantly reduce the time needs for the collection
-of waste~\cite{Sharmin16}. Since the present contracts with service providers or logistical
-obstacles often conflict with changes to the waste collection routes, possible time savings could only be computed but not really be exploited in many places.
+of waste~\cite{Sharmin16}. A comparison of related projects shows that most route optimization projects for the collection of waste lead to the development of a 
+computer simulation~\cite{likotiko17}. The reasons which prevented the incorporation
+of this work in practical smart city implementations were, amongst others,  
+present contracts with service providers and logistical
+obstacles conflicting with changes to the waste collection routes. Possible time savings could only be computed but not really be exploited in many places.
 
-Contrarily, in Regensburg, we recently started applying route optimization and fill-level 
+Contrarily, in Regensburg, we recently started applying route optimization and fill level 
 sensing to the collection of the containers for biological waste.
 Figure~\ref{fig:container} (left) shows one such container and the protection casing on the
 back which houses our electronics. Actually, the
 right part of the picture with the detail view of the electronics shows an 
 earlier prototype
-where the electrical parts placed in the lid. The new box is smaller (making it more difficult
+where the electrical parts were placed in the lid. The new box is smaller (making it more difficult
 to recognize single parts like our LoRa transmitter) and delivers correct data, even 
 if the lid of the container 
-is not closed.
+is not properly closed.
 
-Regensburg established a novel program for the collection of biological waste in 2018 
-and equipped the city and its surrounds with 700 new containers. The novelty of the program
+Regensburg established its novel program for the collection of biological waste in 2018.
+The city and its surrounds were equipped with 700 new containers. The novelty of the program
 allows us, computer scientists (headed by author Jan D{\"u}nnweber) and electrical 
 engineers (headed by his colleague Martin Schubert) at the {\it Technical 
 University of Applied Sciences} in Regensburg (OTH), to contribute to the
@@ -199,10 +210,12 @@ Noteworthy as well, is that 700 containers are not too many. While the number
 of possible thorough paths, connecting all containers is tremendous ($\frac{n!}{2}$ is a 
 1719-digit number), there are only  $\tbinom {700}{2}$ ways to choose an interconnecting 
 route between an unordered pair of containers, which is 
-$\frac{700!}{2!(700 - 2)!}=\frac{700!}{2 \times (698)!}=\frac{699 \times 700}{2}=244650$ interconnections. Combinations vary, but the interconnections are static and can be stored.
+$%\frac{700!}{2!(700 - 2)!}= 
+\frac{700!}{2 \times (698)!}=%\frac{699 \times 700}{2}=
+244650$ interconnections. Combinations vary, but the interconnections are static and can be stored.
 Therefore, we set up a database, which holds for half of the 700 containers ({\it one-way})
-a file with the distances connecting it to the remaining 699 candidates (244650 entries
-totally).
+a file with the distances connecting it to the remaining 699 candidates.% 
+% (244650 entries totally).
 
 \begin{figure}[h!]
   % Use the relevant command to insert your figure file.
@@ -233,11 +246,17 @@ Java program, which the students have developed to export the distance data into
 popular TSPLIB-format~\cite{tsplib90}. With this representation, our data can be 
 processed using Open-Source ACO-code and other TSP-solvers. Our routing software makes
 use of the Thomas St{\"u}tzle Implementation~\cite{Dorigo97} and we used the exact 
-TSP-solver {\it Concorde}~\cite{applegate01} as a reference. Figure~\ref{fig:optmap}
+TSP-solver {\it Concorde}~\cite{applegate01} as a reference. 
+The recorded data and container-specific properties, such as the distance of
+a container to the city center and the number of neighboring containers, helped 
+us to determine realisitc probabilites for the containers to be empty at collection
+time in our simulation. The resulting forecasts were used to select the first 
+containers which we equipped with real electronics.
+Figure~\ref{fig:optmap}
 shows the route we computed for connecting 11 containers in red. This route is 
 11 kilometers long and could be shortened to 7 kilometers (green route) after
 leaving out two containers, which we identified as empty containers using 
-our fill-level sensors.
+our fill level sensors.
 
 \begin{figure}[h!]
   % Use the relevant command to insert your figure file.
@@ -246,7 +265,7 @@ our fill-level sensors.
   \includegraphics[%trim={3cm 4cm 3cm 3cm}, clip,
   width=0.95\linewidth]{optmap}
   % figure caption is below the figure
-  \caption{Container (left) and electronics (right)}
+  \caption{Original (red) and optimized (green) container collection route}
   \label{fig:optmap}       % Give a unique label
 \end{figure}
 
@@ -261,13 +280,13 @@ Thus, our waste management software, tackles both problems, underfilled containe
 (by leaving them our during the collection) and overfilled containers as well, 
 by finding the best positions for new containers in the long run. Instead of
 resetting the route computations when a container is added, removed or 
-re-positioned, we let ACO continuously running, since it is known that the 
-swarm algorithm can adapts to its input~\cite{angus2005}.
+re-positioned, we keep the ACO software continuously running, since it is known that the 
+swarm algorithm adapts to its input~\cite{angus2005}.
 
 Master-student Josef Wei{\ss} (from Martin Schubert's group) set up the electronics
-shown in Figure~\ref{fig:electronics}: The larger board (on the right) holds an ultrasonic transceiver module and a low power µC. The smaller board (on the left holds) and a 
+shown in Figure~\ref{fig:container}: The larger board (on the right) holds an ultrasonic transceiver module and a low power µC. The smaller board holds and a 
 LoRa (Low Range) transceiver. We communicate the fill grade measured by the 
-ultrasonic transceiver via a LoRa gateway. The costs for 10 of this {\it DIY}-devices 
+ultrasonic transceiver via a LoRa gateway. The total costs for 10 of this {\it DIY}-devices 
 were below $1000$~\EUR{} and sponsored by {\tt kpit.com}.
 
 Using our simulation, we could predict that 10 sensors are enough to start
