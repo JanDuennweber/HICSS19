@@ -438,10 +438,9 @@ PiP IoT has rolled out LevelSense\texttrademark ~devices to bins around rubbish 
   \includegraphics[%trim={3cm 4cm 3cm 3cm}, clip,
                    width=0.795\linewidth]{malaysia}
   % figure caption is below the figure
-  \caption{Garbage truck suspension monitoring}
+  \caption{Suspension Monitoring for Routing Malaysia's Trucks Optimally using the Greedy Approach}
   \label{fig:malaysia}       % Give a unique label
 \end{figure*}
-
 
 \subsubsection{Updating and Distributing Information}
 
@@ -479,76 +478,34 @@ will be collected, once a vehicle is near it.
 \section{The Greedy Approach to the Travelling Salesman Problem}
 \label{sec:kpit}
 
-\subsubsection*{Steps}
+Regensburg's project partner {\tt kpit.com} has been working on the use of TSP solvers
+for vehicle routing problems in two former projects: One was focussed on collecting 
+waste and another one was focused on scheduling busses.
+
+Both projects started from a brute-force method, i.\,e., a computer program that
+compares all possible routes. This method was improved using a greedy approach.
+Similarly to ACO, the main idea in the greedy algorithm is {\it local} optimization,
+i.\,e., the algorithm picks what seems to be the best thing to do at a particular time, instead of considering the global situation. In comparison with ACO,
+the greedy algorithm finds approximate solutions using a more coarsely granular
+procedure leiding to an increase of incaccuracy but also to an increase in performance
+in many cases. 
+In terms of swarm intelligence, the greedy approach is closer to the {\it Monarch
+Butterfly Optimization} (MBO) than to ACO~\cite{chen17} (although our implementation
+has no perturbation step). 
+The greedy algorithm can be sketched as follows
+
 
 \begin{enumerate}
 \item Calculate transport times and distances between all stops, e.g. pickup and destination locations, as well as vehicle start locations.
 \item Based on the information collected in step 1, generate routes and assign vehicles. The primary  constraint is that the total travel time for the first person to board the vehicle should not exceed 1.5 times the time taken for him to reach the destination had he chose his direct transport option.
-\item To go through possible options we have used simulated annealing and threshold-accepting algorithms. For each node (stop), the eligible (satisfying time \& capacity constraints) neighbors are evaluated to form paths and the ones which meet the criteria (serve maximum demand with shortest path) are selected. The acceptance criteria considers aspects like remaining capacity, direction deviation from the destination and total travel time.
-\item Since this is a greedy approach, this algorithm is susceptible to choice of first location and hence a customized logic is developed to run it for a set of feasible origins and best possible solution which gives minimum number of resources is chosen.
+\item 
+%To go through possible options we have used simulated annealing and 
+% threshold-accepting algorithms. 
+For each node (stop), the eligible (satisfying time \& capacity constraints) neighbors are evaluated to form paths and the ones which meet the criteria (serve maximum demand with shortest path) are selected. The acceptance criteria considers aspects like remaining capacity, direction deviation from the destination and total travel time.
+\item Since this is a greedy approach, this algorithm is susceptible to choice of first route. % and hence a customized logic is developed to 
+We run it for a set of feasible origins and best possible solution (i.\,e. the one which requires the minimum number of 
+resources) is chosen.
 \end{enumerate}
-
-
-\subsection{Application 1: The Malaysia Garbage Initiative}
-\label{sec:Malaysia}
-
-Malaysia is one of the trend-setters concerning smart city activities and their garbage collection initiative is unique in multiple aspects. The city does not only encompass the collection of garbage 
-in a smart manner but it also takes into account the fleet of collection trucks and their maintenance 
-to ensure availability and better framework to manage the contingencies that may occur. 
-
-\begin{figure}[h!]
-  % Use the relevant command to insert your figure file.
-  % For example, with the graphicx package use
-    \centering
-  \includegraphics[%trim={3cm 4cm 3cm 3cm}, clip,
-                   width=0.95\linewidth]{geofence}
-  % figure caption is below the figure
-  \caption{Real-time routing}
-  \label{fig:geofence}       % Give a unique label
-\end{figure}
-
-For monitoring the garbage collection, Malaysia's garbage trucks are equipped with  
-leaf spring sensors measuring the vehicles' suspension levels. 
-The measured data and the GPS positions of the respective trucks can be visualized 
-in a Web App and they are also used as input of the 
-command center application for coordinating the trucks dynamically. 
-The other parameters processed by this 
-application comprise static information, such as the truck parking locations,
-the bin locations and time estimates before a bin is full. Using these data,
-the Malaysian authorities can observe the amount of the loaded garbage at each 
-location, which helps them to avoid vehicle overloading and truck breakdowns.
-Figure~\ref{fig:malaysia} shows how the components of this IoT 
-infrastructure work together. The MEDS ({\it Mechanical Engineering Design Service}) 
-is was developed by {\tt kpit.com}'s engineering team to connect a microcontroller 
-to the VTS ({\it Vehicle Tracking System}). This microcontroller 
-converts the measured deflection on the leaf suspension to payload weight and uses 
-the GSM network to transmit the data back to the backend server.
-
-The vehicle tracking system makes use of geo fencing to track discrepancies between the
-planned and the actually driven routes (see figure~\ref{fig:geofence}). 
-Comprehensive reports of every vehicle's trip history, map views and the cargo 
-weight details are available in the Web App at the click of a button.
-
-
-\subsection{Application 2: Optimized Bus Routing for Collecting Employees in Bangalore}
-\label{sec:Bangalore}
-
-The costs of transporting employees is a concern for many companies. Especially in India, 
-where the number of employees is high in many of the companies these costs are huge: 
-Employee transport costs are the third highest cost after employee salaries and rentals.
-Therefore, minimizing these costs is of vital importance.
-
-The {\tt kpit.com} initiative was undertaken to find minimal routes and also minimize the
-number of vehicles required to transport employees located at various location in the 
-metro city of Bangalore.
-
-\subsubsection*{Inputs}
-
-\begin{itemize}
-\item Demand at every stop
-\item Stop locations 
-\item Available fleet and their corresponding capacities
-\end{itemize}
 
 \begin{figure*}
   % Use the relevant command to insert your figure file.
@@ -561,12 +518,90 @@ metro city of Bangalore.
   \label{fig:employees}       % Give a unique label
 \end{figure*}
 
+The first route is chosen by picking the farthest location from the office. 
+We draw a circle with the office as the center and the farthest location as radius,
+thus, capturing all the stops.
+
+The above description is about routing busses collecting employees. 
+However, it can be fine tuned for routing waste collection vehicles as well.
+Interestingly, {\tt kpit.com} implemented this use case in Malaysia without
+container sensors. Instead of monitoring the contaiers, the collection
+vehicle load was monitored, allowing for a predictive estimation of the
+container fill grades.
+
+
+\subsection{Application 1: The Malaysia Garbage Initiative}
+\label{sec:Malaysia}
+
+Like New Zealand, Malaysia is another trend-setter concerning smart city activities and their garbage collection initiative is unique in multiple aspects. 
+Figure~\ref{fig:malaysia} shows how the components of this IoT 
+infrastructure work together: the MEDS ({\it Mechanical Engineering Design Service}) 
+is was developed by {\tt kpit.com}'s engineering team to connect a microcontroller 
+to the VTS ({\it Vehicle Tracking System}). This microcontroller 
+converts the measured deflection on the leaf suspension to payload weight and uses 
+the GSM network to transmit the data back to the backend server.
+
+\begin{figure}[h!]
+  % Use the relevant command to insert your figure file.
+  % For example, with the graphicx package use
+    \centering
+  \includegraphics[%trim={3cm 4cm 3cm 3cm}, clip,
+                   width=0.95\linewidth]{geofence}
+  % figure caption is below the figure
+  \caption{Real-time routing}
+  \label{fig:geofence}       % Give a unique label
+\end{figure}
+
+The city does not only encompass the collection of garbage 
+in a smart manner but it also takes into account the fleet of collection trucks and their maintenance 
+to ensure availability and the necessary framework to manage the contingencies that may occur. 
+
+For monitoring the garbage collection, Malaysia's garbage trucks are equipped with  
+leaf spring sensors measuring the vehicles' suspension levels. 
+The measured data and the GPS positions of the respective trucks can be visualized 
+in a Web App and they are also used as input of the 
+command center application for coordinating the trucks dynamically. 
+The other parameters processed by this 
+application comprise static information, such as the truck parking locations,
+the bin locations and time estimates before a bin is full. Using these data,
+the Malaysian authorities can observe the amount of the loaded garbage at each 
+location, which helps them to avoid vehicle overloading and truck breakdowns.
+
+
+The vehicle tracking system makes use of geo fencing to track discrepancies between the
+planned and the actually driven routes (see figure~\ref{fig:geofence}). 
+Comprehensive reports of every vehicle's trip history, map views and the cargo 
+weight details are available in the Web App at the click of a button.
+
+
+\subsection{Application 2: Optimized Bus Routing for Collecting Employees in Bangalore}
+\label{sec:Bangalore}
+
+The costs of transporting employees is a concern for many companies. Especially in India, 
+where the number of employees is high in many companies these costs are huge: 
+employee transport costs are the third highest cost after employee salaries and rentals.
+Therefore, minimizing these costs is of vital importance.
+
+The {\tt kpit.com} initiative was undertaken to find minimal routes and also minimize the
+number of vehicles required to transport employees located at various location in the 
+metro city of Bangalore. The practical implementation (sketched in 
+Figure~\ref{fig:employees}) makes use of the greedy approach with the follwing setup:
+
+\subsubsection*{Input}
+
+\begin{itemize}
+\item The demand at every stop (employees can order a bus using a smart phone App)
+\item The stop locations and their positions
+\item The available fleet and their corresponding capacities
+\end{itemize}
+
 \subsubsection*{Constraints}
 
 \begin{itemize}
-\item Travel time for the first passenger who boards the vehicle should not be more than 1.5 times the time he would take to reach office using his own transport.
-\item The total demand should not exceed the capacity of vehicle
+\item The total demand may not exceed the capacity of vehicle
 \end{itemize}
+
+
 
 %The solution approach is based on travelling salesman approach. 
 % We have used the greedy approach to reduce computations and time to converge.
