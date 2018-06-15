@@ -45,11 +45,11 @@
  }
 
 \date{}
-\makeatletter
-\renewcommand*{\@seccntformat}[1]{%
-  \csname the#1\endcsname\quad
-}
-\makeatother
+% \makeatletter
+% \renewcommand*{\@seccntformat}[1]{%
+%   \csname the#1\endcsname\quad
+% }
+% \makeatother
 
 \begin{document}
 \maketitle
@@ -189,7 +189,9 @@ of this work in practical smart city implementations were, amongst others,
 present contracts with service providers and logistical
 obstacles conflicting with changes to the waste collection routes. Possible time savings could only be computed but not really be exploited in many places.
 
-Contrarily, in Regensburg, we recently started applying route optimization and fill level 
+\subsubsection{Practical implementation}
+
+In Regensburg, we recently started applying route optimization and fill level 
 sensing to the collection of the containers for biological waste.
 Figure~\ref{fig:container} (left) shows one such container and the protection casing on the
 back which houses our electronics. Actually, the
@@ -199,23 +201,6 @@ where the electrical parts were placed in the lid. The new box is smaller (makin
 to recognize single parts like our LoRa transmitter) and delivers correct data, even 
 if the lid of the container 
 is not properly closed.
-
-Regensburg established its novel program for the collection of biological waste in 2018.
-The city and its surrounds were equipped with 700 new containers. The novelty of the program
-allows us, computer scientists (headed by author Jan D{\"u}nnweber) and electrical 
-engineers (headed by his colleague Martin Schubert) at the {\it Technical 
-University of Applied Sciences} in Regensburg (OTH), to contribute to the
-implementation.
-Noteworthy as well, is that 700 containers are not too many. While the number
-of possible thorough paths, connecting all containers is tremendous ($\frac{n!}{2}$ is a 
-1719-digit number), there are only  $\tbinom {700}{2}$ ways to choose an interconnecting 
-route between an unordered pair of containers, which is 
-$%\frac{700!}{2!(700 - 2)!}= 
-\frac{700!}{2 \times (698)!}=%\frac{699 \times 700}{2}=
-244650$ interconnections. Combinations vary, but the interconnections are static and can be stored.
-Therefore, we set up a database, which holds for half of the 700 containers ({\it one-way})
-a file with the distances connecting it to the remaining 699 candidates.% 
-% (244650 entries totally).
 
 \begin{figure}[h!]
   % Use the relevant command to insert your figure file.
@@ -228,15 +213,41 @@ a file with the distances connecting it to the remaining 699 candidates.%
   \label{fig:excel}       % Give a unique label
 \end{figure}
 
+Regensburg established its novel program for the collection of biological waste in 2018.
+The city and its surrounds were equipped with 700 new containers. The novelty of the program
+allows us, computer scientists (headed by author Jan D{\"u}nnweber) and electrical 
+engineers (headed by his colleague Martin Schubert) at the {\it Technical 
+University of Applied Sciences} in Regensburg (OTH), to contribute to the
+implementation.
+Noteworthy as well, is that 700 containers are not too many. While the number
+of possible thorough paths, connecting all containers is tremendous ($\frac{n!}{2}$ is a 
+1719-digit number), there are only  $\tbinom {700}{2}$ ways to choose an interconnecting 
+route between an unordered pair of containers. Numerically, there are 
+%\\ \begin{center}
+$\frac{700!}{2!(700 - 2)!}= 
+\frac{700!}{2 \times (698)!}=\frac{699 \times 700}{2}=
+244650$ %\end{center} 
+possible interconnections. The Combinations may vary, but the 
+single interconnections are static and can be stored in a file (like 
+shown in Figure~\ref{fig:excel}) or database.
+
+\subsubsection{Preliminary work}
+
+We set up a database, which holds for half of the 700 containers ({\it one-way})
+a file with the distances connecting it to the remaining 699 candidates.% 
+% (244650 entries totally).
+
 To ascertain the profitability of our undertakings, we also started with a simulation.
-However, our simulation did not forecast the profits of ACO on arbitrary routes or the
-benefits from observing arbitrary containers. We computed a viable forecast for Regensburg.
+However, our simulation did not forecast the profit from using ACO on arbitrary 
+routes or the benefits from observing arbitrary containers. We computed a viable 
+forecast for 
+Regensburg (see section~\ref{sec:predict}).
 With the help of a group of students (David Burger, Vadim Dechand, 
 Haris Shehzad and Markus Wildgruber), we could fill the mentioned 
 244650-entry database with concrete distances and average driving times. 
-Figure~\ref{fig:excel} shows the first 19 entries of this database in an
-Excel-sheet. Actually, we maintain this data in Redis to benefit from caching
-when the same distances are requested repeatedly~\cite{Carlson13}. 
+Figure~\ref{fig:excel} shows the first 19 entries of this database (in an
+Excel-sheet). Actually, we maintain this data in Redis to benefit from caching
+when the same interconnection distances are requested repeatedly~\cite{Carlson13}. 
 
 After accompanying
 the waste collectors and recording the GPS positions of the containers and the time needs 
@@ -251,12 +262,14 @@ The recorded data and container-specific properties, such as the distance of
 a container to the city center and the number of neighboring containers, helped 
 us to determine realisitc probabilites for the containers to be empty at collection
 time in our simulation. The resulting forecasts were used to select the first 
-containers which we equipped with real electronics.
+10 containers which we equipped with real electronics.
 Figure~\ref{fig:optmap}
-shows the route we computed for connecting 11 containers in red. This route is 
+shows the route we computed for connecting 10 containers in red. This route is 
 11 kilometers long and could be shortened to 7 kilometers (green route) after
 leaving out two containers, which we identified as empty containers using 
 our fill level sensors.
+
+\subsubsection{Overfull and Underfull Containers}
 
 \begin{figure}[h!]
   % Use the relevant command to insert your figure file.
@@ -269,13 +282,15 @@ our fill level sensors.
   \label{fig:optmap}       % Give a unique label
 \end{figure}
 
-To integrate fill-level sensing into the route computations, we started to cope with
+To integrate fill-level sensing with the ACO-based route computations, we started 
+to cope with
 underfilled containers. While overfilled containers seem to be 
 a more urgent problem, it is difficult (or almost impossible) to send a vehicle  
 instantaneously, when an overfilled container is detected. Planning collection 
-routes such that underfilled containers are skipped is much easier and saves time.
-That saved time is used to collect new containers. The recorded data about
-overfilled containers helps to position the new containers where they are needed.
+routes such that underfilled containers are skipped is much easier and saves time and
+the saved time is used to collect new containers. The recorded data about
+overfilled containers helps the Regensburg city council with positioning the new 
+containers where they are needed.
 Thus, our waste management software, tackles both problems, underfilled containers directly
 (by leaving them our during the collection) and overfilled containers as well, 
 by finding the best positions for new containers in the long run. Instead of
@@ -286,8 +301,12 @@ swarm algorithm adapts to its input~\cite{angus2005}.
 Master-student Josef Wei{\ss} (from Martin Schubert's group) set up the electronics
 shown in Figure~\ref{fig:container}: The larger board (on the right) holds an ultrasonic transceiver module and a low power µC. The smaller board holds and a 
 LoRa (Low Range) transceiver. We communicate the fill grade measured by the 
-ultrasonic transceiver via a LoRa gateway. The total costs for 10 of this {\it DIY}-devices 
-were below $1000$~\EUR{} and sponsored by {\tt kpit.com}.
+ultrasonic transceiver via a LoRa gateway. The total costs for our first 10 
+{\it DIY}-devices 
+were below $1000$~\EUR{} and sponsored by our project partner {\tt kpit.com}.
+
+\subsubsection{Fill Level Prediction}
+\label{sec:predict}
 
 Using our simulation, we could predict that 10 sensors are enough to start
 benefiting from our software. To compute a trustworthy prediction, our simulation
@@ -295,22 +314,88 @@ does not simply roll the dice to decide whether a sensor-equipped container can
 be skipped. Instead the probability for each container $i$ to be empty was 
 computed individually using the formula: $P(x_i)=q_i* \frac{c_i}{d_i}$. The value for 
 $q_i$ ranges between $0.1$ (overfull), $0.2$ (full), $0.3$ (half-full) and $0.5$ (empty)
-and was set accordingly to the average fill level of that container that we observed on
+and was set accordingly to the average fill level of that container which we observed on
 the collection tours. Parameter $d_i$ takes account for the fact that waste containers 
-located near the city center are more likely found full and is set to $1.2$ for a container
-withing a $2$ kilometer circle around the center, $1.1$ withing $4$ kilometers and $0.9$ for 
+located near the city center are more likely found full and is $1.2$ for a container
+withing a $2$ kilometer circle around the center; $1.1$ withing $4$ kilometers and $0.9$ for 
 containers located more than $6$ kilometers away from the center. Parameter $c_i$ is weighted 
-accordingly to the number of waste containers next to it and set to $0.9$ when there is none or
-set to $1.1$ for up to $5$ neighboring containers or set to $1.3$ when there are $6$ or more.
-With that estimations, we predicted time savings of approximately one hour per day.
+accordingly to the number of waste containers next to it and $0.9$ when there is none; 
+$1.1$ for up to $5$ neighboring containers and $1.3$ for $6$ or more.
+With these estimations, we predicted time savings of approximately one hour per day.
 Regensburg has just started to adapt the routes accordingly. Thus, we will soon
 know how many extra containers can be emptied within the saved time.
 
-\subsection{Application 2: LevelSense\texttrademark ~and the PiP-IoT project}
+\subsection{Application 2: LevelSense\texttrademark ~and PiP-IoT}
 \label{sec:Christchurch}
 
-While New Zealand may be considered a small country, its smart city ambitions are anything but small. For the last two consecutive years New Zealand earned more recognitions for their smart cities initiatives than any other country in the annual Smart City Asia Pacific Awards (SCAPA), a competitive benchmarking program conducted by Council Associate Partner IDC.
-Following the significant earthquakes of 2010/11, Christchurch City Council (CCC) put aside funds for ‘Sensing Cities’ initiatives. In November 2015, the Smart Cities programme was initiated to carry out rapid proof of concept projects.
+Smart garbage collection is only a part of a larger smart city initiative in
+New Zealand which comprises efficient street and traffic lighting, 
+water and wastewater management and energy-saving as well.
+New Zealand may be considered a small country, but its smart city ambitions are 
+anything but small. For the last two consecutive years New Zealand earned a remarkable amount of honors for its smart cities innovations in the annual Smart City Asia Pacific Awards (SCAPA), a competitive benchmarking program conducted by Council Associate Partner IDC.
+In reply to the disastrous earthquakes of 2010/11, Christchurch City Council (CCC) put aside funds for ‘Sensing Cities’ initiatives. In November 2015, the Smart Cities programme was initiated to carry out rapid proof of concept projects.
+
+With 3 more years background, the Chrischurch projects are a bit
+more advanced than the work in Regensburg and the results matter beyond the 
+borders of New Zealand: More than 50\% of the world’s population lives in cities by 2050, it will be more the 75\%. While the world’s cities only cover two per cent of the global land area, they are responsible for 70\% of greenhouse gas emissions and the global climate change.
+As a consequence, we urgently need sustainable solutions to combat these city-focused issues. The reduction of $CO_2$ emissions from motor vehicles are all essential elements of these solutions. 
+
+\subsubsection{A Versatile Level Sensor}
+
+Christchurch is using smart sensors to ensure that rubbish bins are emptied at 
+the right time. 
+
+\begin{figure}[h!]
+  % Use the relevant command to insert your figure file.
+  % For example, with the graphicx package use
+    \centering
+  \includegraphics[%trim={3cm 4cm 3cm 3cm}, clip,
+                   width=0.695\linewidth]{levelsense}
+  % figure caption is below the figure
+  \caption{The CCC waste bin sensor}
+  \label{fig:levelsense}       % Give a unique label
+\end{figure}
+
+Figure~\ref{fig:levelsense} shows one of the LevelSense\texttrademark ~devices.
+The LevelSense\texttrademark ~product was developed by Christchurch company PiP IoT to check rubbish levels. The sensors allow city council’s contractors to recognise optimal waste collection times. Its key features are
+\begin{itemize}
+\item Tilt sensing 
+\item GPS position and movement monitoring
+\item Tampering and orientation detection
+\item Shock and vibration sensing
+\item Temperature measurement
+\item An expected battery life of 5 years
+\item Low power network / LPWAN connectivity
+\item Real time analytics
+\item Mobile / Web reporting
+\item SIGFOX class 0 certification
+\end{itemize} 
+
+\subsubsection{Project Outcomes}
+
+Christchurch's rubbish collection contractors work constantly to empty the city's bins 
+but when they arrived at a bin, before the introduction of LevelSense\texttrademark, they did not know whether it was empty, full one or an overflowing mess. 
+PiP IoT developed LevelSense\texttrademark ~primarily to avoid overflowing public 
+rubbish bins, which where a frequent source of complaints from residents.
+Though, with the LevelSense\texttrademark ~devices, multiple other enhancements 
+are anticiptated.
+
+\begin{itemize}
+	\item
+	A reduction of CO2 emissions and pollution: Fewer rubbish collection trucks on the road for less time means lower fuel consumption and lower greenhouse gas emissions. Fewer collection trucks on the road will also mean less noise pollution, air pollution, and less wear and tear on the road network.
+	\item
+	A reduction in operational costs: Managing waste takes a large portion of our rates. Bin level sensors and monitoring solutions have been known to reduce waste collection costs by up to 50 \% (fewer collections mean less money spent on driver hours, fuel and truck maintenance).
+	\item
+	Improved hygiene: overflowing rubbish is a breeding ground for bacteria, insects and pests because of accumulated rubbish. It’s a public nuisance and unpleasant for residents and tourists.
+	\item
+	Identification of misuse of public rubbish bins: for example, sudden spikes in rubbish levels at night can indicate that household rubbish is being dumped illegally from residents or campers. 
+\end{itemize}
+
+\subsubsection{The PiP IoT mobile waste monitoring App}
+
+Christchurch selected the local company PiP IoT to develop and test sensor and
+software technology % in the combat against overflowing rubbish bins 
+with the objective of creating operational efficiencies and an enhanced streetscape for citizens.
 
 \begin{figure}[h!]
   % Use the relevant command to insert your figure file.
@@ -324,12 +409,27 @@ Following the significant earthquakes of 2010/11, Christchurch City Council (CCC
   \label{fig:binmon}       % Give a unique label
 \end{figure}
 
-More than 50\% of the world’s population lives in cities by 2050, it will be more the 75\%. While the world’s cities only cover two per cent of the global land area, they are responsible for 70\% of greenhouse gas emissions and the global climate change.
-As a consequence, we urgently need sustainable solutions to combat these city-focused issues. Smart garbage collection, energy-saving and efficient street and traffic lighting, water and wastewater management, and the reduction of $CO_2$ emissions from motor vehicles are all essential elements of 
-these solutions. Christchurch is using smart sensors to ensure rubbish bins are emptied at the right time.
 
-Overflowing public rubbish bins are a frequent source of complaints from residents. City’s rubbish collection contractors work constantly to empty the city’s bins but before they arrive at the site they don't know whether they’ll find an empty bin, a full one or an overflowing mess. 
-The bin sensor trial uses LevelSense\texttrademark ~sensors, which were developed by Christchurch company PiP IoT, to check rubbish levels. The sensors allow city council’s contractors to recognise optimal waste collection times and recommend optimal collection routes. As a result, the council's operational managers can find out whether they have the right number of bins in the right places to meet public demand. 
+PiP IoT has rolled out LevelSense\texttrademark ~devices to bins around rubbish trouble spots, including a city park and a retail area. Notifications are sent to contractors’ phones and bin status across the city can be viewed in an online dashboard telling them how full each bin is (see figure~\ref{fig:binmon}, right). Rubbish levels are also being tracked, providing a graphic illustration of when the bins are used most.
+
+\begin{figure}[h!]
+  % Use the relevant command to insert your figure file.
+  % For example, with the graphicx package use
+    \centering
+  \includegraphics[%trim={3cm 4cm 3cm 3cm}, clip,
+                   width=0.95\linewidth]{AntTruck}
+  % figure caption is below the figure
+  \caption{Three iterations of ACO}
+  \label{fig:anttruck}       % Give a unique label
+\end{figure}
+
+% The PiP LevelSense™ devices include GPS location along with tilt and shock monitoring capability and temperature sensing in case of a fire. They use a battery that will last for three to five years.
+% Ed Hadfield, Operations Manager at Recreational Services, the CCC contractor which manages the bins, said "The cool thing about this is that it's allowing us to utilise our resources where they're needed the most”.
+% Smart Cities Programme Manager Teresa McCallum says the project shows how technology can be used to solve everyday problems.
+% “We are really excited about the potential of these bin sensors to clean up an issue that causes a lot of annoyance and inconvenience to the community."
+
+% "It is another example of the way Smart Cities is working alongside local companies to foster innovation that benefits our city and can be used throughout New Zealand and beyond. Apart from being more efficient, it’s an innovative way to make our city smarter, more sustainable, and get rid of overflowing rubbish complaints for good.”
+
 
 \begin{figure*}[h]
   % Use the relevant command to insert your figure file.
@@ -342,86 +442,41 @@ The bin sensor trial uses LevelSense\texttrademark ~sensors, which were develope
   \label{fig:malaysia}       % Give a unique label
 \end{figure*}
 
-\subsection{Level Sensor Specifications}
 
-Level Sense sensors where built for ultra-rugged tank and bin level measurement with GPS position 
-and movement monitoring. The devices monitor the fill levels of remote tanks, bins or other 
-container assets in real time for improved service management outcomes. \\
-
-The key features are
-\begin{itemize}
-\item Tilt sensing capability 
-\item GPS location and Geo-fencing capabilities
-\item Tampering and orientation detection
-\item Shock and vibration sensing
-\item Temperature measurement
-\item Expected battery life of 5 years
-\item Low Power Network - LPWAN Connectivity
-\item Real time analytics
-\item Mobile / Web Reporting
-\item SIGFOX Class 0 Certified
-\end{itemize}
-
-\subsubsection{How the Sensors Work}
-
-A small unit mounted on the inside of the bin lid uses sonar, which detects the rubbish level and transmits readings to the monitoring system (see figure~\ref{fig:binmon}, left).
-
-A dashboard shows the status of each bin. When rubbish reaches a specified level, the system alerts the contractor that the bin needs emptying.
-
-\subsubsection{Anticipated Outcomes}
-
-\begin{itemize}
-	\item
-	Reduction in CO2 emissions and pollution:  fewer rubbish collection trucks on the road for less time, which means lower fuel consumption and lower greenhouse gas emissions. Fewer collection trucks on the road will also mean less noise pollution, air pollution, and less wear and tear on our road network.
-	\item
-	Reduction in operational costs: managing waste takes a large portion of our rates. Bin level sensors and monitoring solutions have been known to reduce waste collection costs by up to 50 \% (fewer collections mean less money spent on driver hours, fuel and truck maintenance).
-	\item
-	Significant reduction in overflowing rubbish bins: overflowing rubbish is a breeding ground for bacteria, insects and pests because of accumulated rubbish. It’s a public nuisance and unpleasant for residents and visitors to our garden city.
-	\item
-	Identifies the use (or misuse) of public rubbish bins: for example, sudden spikes in rubbish levels at night can indicate that household rubbish is being dumped illegally from residents or campers. 
-\end{itemize}
-
-CCC selected local company PiP IoT for a pilot to test new sensor technology in the combat against overflowing rubbish bins with the objective of creating operational efficiencies and an enhanced streetscape for citizens
-
-PiP IoT has rolled out LevelSense\texttrademark devices to ten bins around rubbish trouble spots, including a city park and a retail area. Notifications are sent to contractors’ phones and bin status across the city can be viewed in an online dashboard telling them how full each bin is (see figure~\ref{fig:binmon}, right). Rubbish levels are also being tracked, providing a graphic illustration of when the bins are used most.
-
-
-% The PiP LevelSense™ devices include GPS location along with tilt and shock monitoring capability and temperature sensing in case of a fire. They use a battery that will last for three to five years.
-% Ed Hadfield, Operations Manager at Recreational Services, the CCC contractor which manages the bins, said "The cool thing about this is that it's allowing us to utilise our resources where they're needed the most”.
-% Smart Cities Programme Manager Teresa McCallum says the project shows how technology can be used to solve everyday problems.
-% “We are really excited about the potential of these bin sensors to clean up an issue that causes a lot of annoyance and inconvenience to the community."
-
-% "It is another example of the way Smart Cities is working alongside local companies to foster innovation that benefits our city and can be used throughout New Zealand and beyond. Apart from being more efficient, it’s an innovative way to make our city smarter, more sustainable, and get rid of overflowing rubbish complaints for good.”
-
-
-
-
-\subsubsection{Using ACO Update Rules}
+\subsubsection{Updating and Distributing Information}
 
 For finding the optimal route connecting the full (or almost full) containers, Christchurch
-makes use of ACO as well. 
+pioneered in the use of ACO (Actually, the Christchuch implemetation served as an 
+exemplar for the Regensburg project described in section~\ref{sec:Regensburg}).
 % In the traveling salesman problem, a set of cities is given and the distance between each of them is known. The goal is to find the shortest tour that allows each city to be visited once and only once. In more mathematical terms, the goal is to find a Hamiltonian tour of minimal length on a fully connected graph. In ant colony optimization, the problem is attacked by simulating a number of artificial ants moving on a graph that encodes the problem itself: each vertex represents a city and each edge represents a connection between two cities. A variable called pheromone is associated with each edge and can be read and modified by ants. Ant colony optimization is an iterative algorithm. At each iteration, a number of artificial ants are considered. Each of them builds a solution by walking from vertex to vertex on the graph with the constraint of not visiting any vertex that it has already visited in its walk. At each step of the solution construction, an ant selects the following vertex to be visited according to a stochastic mechanism that is biased by the pheromone: when in vertex i, the following vertex is selected stochastically among the previously unvisited ones. In particular, if j has not been previously visited, it can be selected with a probability that is proportional to the pheromone associated with edge (i, j). At the end of an iteration, on the basis of the quality of the solutions constructed by the ants, the pheromone values are modified in order to bias ants in future iterations to construct solutions similar to the best ones previously constructed.
 % Each ant builds a solution by using
-Th algorithm makes use if two types of locally accessible information: 
+
+In Christchurch, the original algorithm was tuned to run on embedded devices using two types of locally accessible information: 
 \begin{enumerate}
-\item problem-specific information, i.e., distance among cities, and 
+\item problem-specific information, i.e., distance among containers, and 
 \item information added by ants during previous iterations of the algorithm, such as pheromone values.
 \end{enumerate} 
-While building a solution, each ant collects information on the problem characteristics and on its own performance, and uses this information to modify the representation of the problem. The modified representation is the new environment shared by all the ants and seen locally by other ants. 
+While building a solution, each simulated ant collects information on the problem characteristics and on its own performance, and uses this information to modify the representation of the problem. The modified representation is the new environment shared by all the ants and seen locally by other ants. 
 % The representation of the problem is modified in such a way that information contained in past 
 % good solutions can be exploited to build new better solutions. As mentioned earlier, 
-This form of indirect communication mediated by the environment is called stigmergy, and is typical of social insects~\cite).
+This form of indirect communication mediated by the environment is called {\it stigmergy}, and is typical of social insects~\cite{Dorigo97}).
+Figure~\ref{fig:anttruck} shows how the information updates are used for
+routing the garbage truck: it will take path $b$ from $A\rightarrow B$ already 
+after the third iteration, since in the second iteration more simulated ants have 
+returned from this path, leading to a stronger pheromone concentration than on the
+longer return path $a$ from  $B\rightarrow A$.
 % Suppose an ant k (in m ants) is at city i, and Nk is the set of k’s unvisited cities. Then, the ant chooses city j to visit next in a probabilistic way as follows:
 
 % Here, η(i,j) represents the problem-specific information, and in TSP, it is the reciprocal of the distance between two cities i and j. τ(i,j) represents the information about the ant trails, i.e., the pheromone value on the route between two cities i and j. α and β are non-negative constants, and their values determine whether η (local information) or τ (global information) has more weight in the formula. τ(i,j) is updated accordingly to the following rules, when one iteration is done.
 
 % Here, Tk represents the set of all routes from the start city to the goal city, and Lkrepresents the collective distance from the start city to the goal city. In ant-colony algorithms, the pheromone value added to a specific route is determined by the reciprocal of the total distance and the pheromone also disappears over time, where ρ represents the evaporation rate, such that newly added pheromone has more influence than old pheromone additions. Thus, after many of iterations, one can expect to obtain an approximately optimal route selection.
 % As demonstrated here, ACO algorithms have been applied to dynamic versions of the TSP, where either the distance between some pairs of cities changes, or cities are dynamically added or removed from the set of cities to be visited. Additionally, an ACO algorithm has also been applied to dynamic vehicle routing problems, showing good behaviour on randomly generated problem instances and on real-world instances as well (Dorigo and Gambardella, 1997). This makes it the perfect algorithm for our dynamic waste collection vehicle routing scenario.
-The waste collection problem in Christchurch poses a dynamic instance of the TSP, where cities are represented by containers and containers which are (almost) empty are not collected. Containers which are full or almost full will appear in the bin collection route dashboard and will be collected.
-ACO has shown good performance on randomly generated problem instances and on real-world instances as well. This makes it the perfect algorithm for Christchurch's 
-dynamic vehicle routing scenario.
+The waste collection problem in Christchurch poses a dynamic instance of the TSP, where cities are represented by containers and containers which are (almost) empty are not collected. Containers which are full or almost full appear in the route dashboard and 
+will be collected, once a vehicle is near it.
+% ACO has shown good performance on randomly generated problem instances and on real-world instances as well. This makes it the perfect algorithm for Christchurch's 
+% dynamic vehicle routing scenario.
 
-\section{The greedy approach to the travelling salesman problem}
+\section{The Greedy Approach to the Travelling Salesman Problem}
 \label{sec:kpit}
 
 \subsubsection*{Steps}
